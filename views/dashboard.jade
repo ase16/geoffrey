@@ -1,0 +1,7 @@
+extends layout.jade
+
+block content
+    h1=title
+    p=text
+    form(method='post' action='/logout')
+        button#logout(type='submit') logout
