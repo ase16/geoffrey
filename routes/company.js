@@ -1,3 +1,5 @@
+"use strict";
+
 // Third-party modules
 var router = require('express').Router();
 var stormpath = require('express-stormpath');

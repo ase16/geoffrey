@@ -1,7 +1,10 @@
+"use strict";
+
 // NodeJS core modules
 var path = require('path');												// This module contains utilities for handling and transforming file paths --> https://nodejs.org/dist/latest-v5.x/docs/api/path.html
 
 // Third-party modules
+require('dotenv').config({path: '.env.stormpath'});						// Automatically reads in .env files and sets environment variables --> https://github.com/motdotla/dotenv#usage
 var express = require('express');
 var expressStormpath = require('express-stormpath');					// Our "Tenant" for Stormpath is "majestic-panther" --> https://api.stormpath.com/login
 

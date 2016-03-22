@@ -1,3 +1,5 @@
+"use strict";
+
 // NodeJS core modules
 var path = require('path');								// https://nodejs.org/dist/latest-v5.x/docs/api/path.html (This module contains utilities for handling and transforming file paths)
 
