@@ -8,6 +8,9 @@ require('dotenv').config({path: '.env.stormpath'});						// Automatically reads 
 var express = require('express');
 var expressStormpath = require('express-stormpath');					// Our "Tenant" for Stormpath is "majestic-panther" --> https://api.stormpath.com/login
 
+// Express modules
+var bodyParser = require('body-parser');								// --> https://github.com/expressjs/body-parser
+
 // Custom modules
 var stormpath = require('./routes/stormpath');
 var authentication = require('./routes/authentication');
@@ -20,6 +23,8 @@ var app = express();													// --> http://expressjs.com/en/4x/api.html#app
 // Set up view/template engine and make static files accessible
 app.set('view engine', 'jade');											// Specify which template-engine to use (we do not need to "require" it since it is handled via ExpressJS)
 app.set('views', path.join(__dirname, 'views'));						// Specify where the templates can be found ("__dirname" returns absolute path of current file)
+app.use(bodyParser.json());												// --> https://github.com/expressjs/body-parser#bodyparserjsonoptions
+app.use(bodyParser.urlencoded({ extended: false }));					// --> https://github.com/expressjs/body-parser#bodyparserurlencodedoptions
 app.use(express.static(path.join(__dirname, 'public')));				// --> http://expressjs.com/en/starter/static-files.html
 
 // Must be defined as the last middleware, but before our routes

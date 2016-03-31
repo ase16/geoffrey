@@ -1,3 +1,5 @@
-/node_modules
 /.env.stormpath
 /.idea
+/data
+/drafts
+/node_modules

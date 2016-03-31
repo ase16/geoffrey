@@ -48,6 +48,9 @@ var stormpath = {										// https://github.com/stormpath/express-stormpath/blo
 			// view: path.join(__dirname,'views/stormpath','changePassword.jade')
 		}
 	},
+	expand: {
+		customData: true
+	},
 	postRegistrationHandler: function (account, req, res, next) {													// http://docs.stormpath.com/nodejs/express/latest/registration.html#post-registration-handler
 		console.log('User:', account.email, 'just registered!');
 
@@ -77,5 +80,4 @@ var stormpath = {										// https://github.com/stormpath/express-stormpath/blo
 	}
 };
 
-// module.exports = router;
 module.exports = stormpath;

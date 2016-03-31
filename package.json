@@ -1,7 +1,7 @@
 {
   "name": "geoffrey",
   "version": "1.0.0",
-  "description": "Geoffrey is the web service that deals with the user/company accounts",
+  "description": "Geoffrey - A company name sentiment analysis application doped with some elastic computing and some help of the CGE",
   "main": "app.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
@@ -14,10 +14,10 @@
     "config": "^1.19.0",
     "dotenv": "^2.0.0",
     "express": "^4.13.4",
-    "express-stormpath": "^3.0.1",
+    "express-stormpath": "^3.1.1",
     "jade": "^1.11.0",
     "moment": "^2.12.0",
-    "moment-timezone": "^0.5.1",
+    "moment-timezone": "^0.5.3",
     "morgan": "^1.7.0",
     "sentiment": "^1.0.6",
     "twit": "^2.2.3"
