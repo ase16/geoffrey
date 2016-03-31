@@ -22,10 +22,11 @@ var app = express();													// --> http://expressjs.com/en/4x/api.html#app
 
 // Set up view/template engine and make static files accessible
 app.set('view engine', 'jade');											// Specify which template-engine to use (we do not need to "require" it since it is handled via ExpressJS)
-app.set('views', path.join(__dirname, 'views'));						// Specify where the templates can be found ("__dirname" returns absolute path of current file)
+app.set('views', path.join(__dirname, 'views/material_design'));						// Specify where the templates can be found ("__dirname" returns absolute path of current file)
 app.use(bodyParser.json());												// --> https://github.com/expressjs/body-parser#bodyparserjsonoptions
 app.use(bodyParser.urlencoded({ extended: false }));					// --> https://github.com/expressjs/body-parser#bodyparserurlencodedoptions
 app.use(express.static(path.join(__dirname, 'public')));				// --> http://expressjs.com/en/starter/static-files.html
+app.use(express.static(path.join(__dirname, 'node_modules')));
 
 // Must be defined as the last middleware, but before our routes
 app.use(expressStormpath.init(app, stormpath));							// --> http://docs.stormpath.com/nodejs/express/latest/configuration.html#initialize-express-stormpath

@@ -25,8 +25,8 @@ var stormpath = {										// https://github.com/stormpath/express-stormpath/blo
 		login: {
 			enabled: true,
 			uri: '/',
-			nextUri: '/authentication'
-			// view: path.join(__dirname,'views/stormpath','login.jade')
+			nextUri: '/authentication',
+			view: path.join(__dirname,'../views/material_design/stormpath','login.jade')
 		},
 		// http://docs.stormpath.com/nodejs/express/latest/logout.html#configuration-options
 		logout: {

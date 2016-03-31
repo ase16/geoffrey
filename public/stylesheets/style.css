@@ -1,8 +1,25 @@
 body {
-	padding: 50px;
-	font: 14px "Lucida Grande", Helvetica, Arial, sans-serif;
+	// padding: 50px;
+	// font: 14px "Lucida Grande", Helvetica, Arial, sans-serif;
 }
 
 a {
-	color: #00B7FF;
+	// color: #00B7FF;
+}
+
+.customContainer {
+	margin: auto;
+	width: 80%
+}
+
+
+.demo-layout-waterfall .mdl-layout__header-row .mdl-navigation__link:last-of-type  {
+  padding-right: 0;
+}
+
+.login-card {
+	position: relative;
+	margin:auto;
+	display: block;
+	width: 100%;
 }

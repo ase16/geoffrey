@@ -20,7 +20,8 @@
     "moment-timezone": "^0.5.3",
     "morgan": "^1.7.0",
     "sentiment": "^1.0.6",
-    "twit": "^2.2.3"
+    "twit": "^2.2.3",
+    "material-design-lite": "^1.1.2"
   },
   "devDependencies": {
     "errorhandler": "^1.4.3"
