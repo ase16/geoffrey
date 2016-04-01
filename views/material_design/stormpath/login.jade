@@ -23,18 +23,18 @@ block content
 					.mdl-card__title
 						h2.mdl-card__title-text Login
 					.mdl-card__supporting-text Please login to get analytics data
-		.mdl-grid
-			.mdl-cell.mdl-cell--12-col.mdl-cell--8-col-tablet
-				form(method='post',role='form')
-					input(name='_csrf', type='hidden', value=csrfToken)
-					.mdl-grid
-						.mdl-cell.mdl-cell--12-col.mdl-cell--8-col-tablet.mdl-textfield.mdl-js-textfield.mdl-textfield--floating-label
-							input#login.mdl-textfield__input(type='email', name='login')
-							label.mdl-textfield__label(for='login') Email
-					.mdl-grid
-						.mdl-cell.mdl-cell--12-col.mdl-cell--8-col-tablet.mdl-textfield.mdl-js-textfield.mdl-textfield--floating-label
-							input#password.mdl-textfield__input(type='password', name='password')
-							label.mdl-textfield__label(for='password') Password
 					.mdl-grid
 						.mdl-cell.mdl-cell--12-col.mdl-cell--8-col-tablet
-							button.mdl-button.mdl-js-button.mdl-button--raised.mdl-button--colored(type='submit', name='submit') Submit
+							form(method='post',role='form')
+								input(name='_csrf', type='hidden', value=csrfToken)
+								.mdl-grid
+									.mdl-cell.mdl-cell--12-col.mdl-cell--8-col-tablet.mdl-textfield.mdl-js-textfield.mdl-textfield--floating-label
+										input#login.mdl-textfield__input(type='email', name='login')
+										label.mdl-textfield__label(for='login') Email
+								.mdl-grid
+									.mdl-cell.mdl-cell--12-col.mdl-cell--8-col-tablet.mdl-textfield.mdl-js-textfield.mdl-textfield--floating-label
+										input#password.mdl-textfield__input(type='password', name='password')
+										label.mdl-textfield__label(for='password') Password
+								.mdl-grid
+									.mdl-cell.mdl-cell--12-col.mdl-cell--8-col-tablet
+										button.mdl-button.mdl-js-button.mdl-button--raised.mdl-button--colored(type='submit', name='submit') Submit
