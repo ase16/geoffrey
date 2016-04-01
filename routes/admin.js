@@ -11,7 +11,8 @@ router.get('/*', stormpath.groupsRequired(['admins']), function(req, res, next) 
 router.get('/main', function(req, res, next) {
 	res.render('admin/main', {
 		title: 'Admin Space - Main Screen',
-		email: req.user.email
+		email: req.user.email,
+		user: req.user
 	});
 });
 

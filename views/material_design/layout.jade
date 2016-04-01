@@ -17,14 +17,23 @@ html
 						a.mdl-navigation__link(href="#") Sample 1
 						a.mdl-navigation__link(href="#") Sample 2
 						a.mdl-navigation__link(href="#") Sample 3
+						if user
+							form#logout(method='post' action='/logout')
+								a.mdl-navigation__link(href='#', onclick='logout()') Logout
 			.mdl-layout__drawer
 				span.mdl-layout-title Geoffrey
 				nav.mdl-navigation
 					a.mdl-navigation__link(href="#") Sample 1
 					a.mdl-navigation__link(href="#") Sample 2
 					a.mdl-navigation__link(href="#") Sample 3
+					if user
+						a.mdl-navigation__link(href="#") Logout
 			main.mdl-layout__content
 				block content
 
+		script.
+			var logout = function() {
+				document.getElementById('logout').submit()
+			}
 		script(src='https://code.jquery.com/jquery-2.2.2.min.js')
 		script(src='material-design-lite/material.min.js')

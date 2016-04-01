@@ -15,7 +15,8 @@ router.all('/*', stormpath.groupsRequired(['companies']), function(req, res, nex
 router.get('/main', function(req, res, next) {
 	res.render('company/main', {
 		title: 'Company Space - Main Screen',
-		email: req.user.email
+		email: req.user.email,
+		user: req.user
 	});
 });
 
