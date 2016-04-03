@@ -16,6 +16,7 @@ var stormpath = require('./routes/stormpath');
 var authentication = require('./routes/authentication');
 var admin = require('./routes/admin');
 var company = require('./routes/company');
+var viz = require('./routes/viz');
 
 // Create express application
 var app = express();													// --> http://expressjs.com/en/4x/api.html#app
@@ -34,6 +35,7 @@ app.use(expressStormpath.init(app, stormpath));							// --> http://docs.stormpa
 app.use('/', authentication);
 app.use('/admin', admin);
 app.use('/company', company);
+app.use('/viz', viz);
 
 // Our server can start listening as soon as the Stormpath SDK has been initialized
 app.on('stormpath.ready', function() {
