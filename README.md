@@ -15,13 +15,23 @@ Be aware that if you register yourself with the email address that we use for ou
 communication, that you are registered as an **admin** user.
 With every other email address you'll be registered as a **company** user.
 
+## Terms Management in optimistic UI
+A first implmentation has been made of the terms management UI (without CSS, just HMTL & JS).
+An "Optimistic UI" approach has been used, which might be known from MeteorJS.
+So, if you add a new term, you immediately see it on the list, even though it hasn't
+been really stored on Stormpath and the DB yet. For you to see what's going on, I've
+artificially added a string "(Optimistic UI)" after the term when you add it. After
+the client got a response from server, the (Optimistic UI) disappears.
+
 ## Playing round with the terms API
 A company user can manage the terms for that the user would like to collect twitter data and later
-fire sentiment analysis on it. Currently the terms are only implement in some kind of RESTful manner
-without any UI yet. Also note they are currently only stored as custom-data on the corresponding stormpath
+fire sentiment analysis on it.
+
+The terms are implemented in some kind of RESTful manner.
+Note they are currently only stored as custom-data on the corresponding stormpath
 user (Maybe we have to store them also or only in the MongoDB).
 
-Anyway, if you would like to list the terms, add a new term, alter a term or delete a term
+Anyway, if you would like to use the terms API to list the terms, add a new term, alter a term or delete a term
 then you can currently **use the web-browser's console** to fire some ajax requests (I've set up jQuery
 on the front-end so that we can use that). Be ware that parameter and error handling is rather poor
 yet and will be improved in the near future.

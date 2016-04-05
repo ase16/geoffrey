@@ -3,6 +3,10 @@ extends ../layout.jade
 block content
 	h1=title
 	h2=email
-	a(href = '/company/main' target='_self') Back to the Main Screen
+	a(href='/company/main' target='_self') Back to the Main Screen
 	form(method='post' action='/logout')
 		button#logout(type='submit') logout
+	div#terms
+
+	script(src='/javascripts/libs/jquery.serialize-object.min.js')
+	script(src='/javascripts/company/terms.js')
