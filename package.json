@@ -22,9 +22,11 @@
     "jade": "^1.11.0",
     "moment": "^2.12.0",
     "moment-timezone": "^0.5.3",
+    "mongodb": "^2.1.14",
     "morgan": "^1.7.0",
     "sentiment": "^1.0.6",
-    "twit": "^2.2.3"
+    "twit": "^2.2.3",
+    "winston": "^2.2.0"
   },
   "devDependencies": {
     "errorhandler": "^1.4.3"
