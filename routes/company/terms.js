@@ -6,8 +6,8 @@ var terms = {
 	create: function(req, callback) {
 
 		// ToDo: Make sure all necessary params exist and are what they should be
+		console.log("POST /company/terms ==> CREATE: req.body = ", req.body);
 		var term = req.body.term;
-		console.log("POST /company/terms ==> CREATE: term = ", term);
 
 		if (term) {
 			if (!req.user.customData.hasOwnProperty("terms")) {
