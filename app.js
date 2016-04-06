@@ -18,6 +18,9 @@ var admin = require('./routes/admin');
 var company = require('./routes/company');
 var viz = require('./routes/viz');
 
+// db-object
+const db = require('./dbModule.js');
+
 // Create express application
 var app = express();													// --> http://expressjs.com/en/4x/api.html#app
 
@@ -41,5 +44,6 @@ app.use('/viz', viz);
 app.on('stormpath.ready', function() {
 	app.listen(3000, function () {
 		console.log('Geoffrey is listening on port 3000!');
+		db.connect(() => { console.log("Geoffrey is ready")})
 	});
 });

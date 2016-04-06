@@ -7,6 +7,7 @@ Log.level = config.get('log.level');
 
 const MongoClient = require('mongodb').MongoClient;
 const ObjectId = require('mongodb').ObjectID;
+
 let mongodb;
 
 // returns the mongodb connection string
@@ -18,7 +19,7 @@ const mongodbUrl = function() {
 }
 
 // this is a pseudo-check to see if we have a connection
-// --> if the object is not undefined, we assume it has been initialized/set
+// if the object is not undefined, we assume it has been initialized/set
 const isConnected = () => typeof mongodb !== "undefined"
 
 const db = {
@@ -45,7 +46,7 @@ const db = {
 
     // @param term e.g. 'clinton'
     // @param cid customer-id aka the email address
-    // @param callback fn(err, result)
+    // @param callback fn(err, res)
 	insertTerm: function(term, cid, callback) {
 
         if (isConnected()) {
