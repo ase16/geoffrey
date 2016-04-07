@@ -1,4 +1,23 @@
 {
+    "credentials": {
+        "twitter": {
+            "consumer_key": "SET",
+            "consumer_secret": "SET",
+            "access_token": "SET",
+            "access_token_secret": "SET"
+        }
+    },
+
+    "mongodb": {
+        "host": "localhost",
+        "port": 27017,
+        "dbname": "twitterdata"
+    },
+
+    "log": {
+        "level": "info"
+    },
+
 	"admin-emails": [
 		"andreas.albrecht@uzh.ch",
 		"oliver.leumann@gmail.com",

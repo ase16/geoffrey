@@ -1,13 +1,17 @@
 "use strict";
 
+// db-object
+const db = require('./../../dbModule.js');
+
+
 // Terms module is designed like a mini CRUD application
 var terms = {
 
 	create: function(req, callback) {
 
 		// ToDo: Make sure all necessary params exist and are what they should be
+		console.log("POST /company/terms ==> CREATE: req.body = ", req.body);
 		var term = req.body.term;
-		console.log("POST /company/terms ==> CREATE: term = ", term);
 
 		if (term) {
 			if (!req.user.customData.hasOwnProperty("terms")) {
@@ -20,12 +24,21 @@ var terms = {
 
 			req.user.customData.terms.push(term);
 			req.user.customData.save(function(err, data) {
-				return callback(err, data.terms);
+
+				if (!err) {
+					db.insertTerm(term, req.user.email, function(err) {
+						if (!err) return callback(null, data.terms);
+						else callback(err)
+					})
+				}
+				else	callback(err)
+
 			});
 		}
 		else {
 			// ToDo: Implement some clean error handling
-			return callback({}, undefined);
+			// roy: maybe this way
+			return callback(new Error('term is not defined'))
 		}
 	},
 
@@ -56,7 +69,20 @@ var terms = {
 			var i = req.user.customData.terms.indexOf(originalTerm);
 			req.user.customData.terms[i] = newTerm;
 			req.user.customData.save(function(err, data) {
-				return callback(err, data.terms);
+
+				if(!err) {
+					db.insertTerm(newTerm, req.user.email, function(err) {
+						if (!err) {
+							db.removeTerm(originalTerm, req.user.email, function(err) {
+								if(!err) return callback(null, data.terms);
+								else callback(err)
+							})
+						}
+						else callback(err)
+					})
+				} else {
+					return callback(err);
+				}
 			});
 		}
 		else {
@@ -75,7 +101,15 @@ var terms = {
 			var i = req.user.customData.terms.indexOf(term);
 			req.user.customData.terms.splice(i, 1);
 			req.user.customData.save(function(err, data) {
-				return callback(err, data.terms);
+
+				if (!err) {
+					db.removeTerm(term, req.user.email, function(err) {
+						if(!err) return callback(null, data.terms);
+						else callback(err)
+					})
+				}
+				else callback(err)
+
 			});
 		}
 		else {

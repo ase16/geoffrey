@@ -25,4 +25,21 @@ a {
 	margin:auto;
 	display: block;
 	width: 100%;
+	color: #00B7FF;
+}
+
+path, line {
+	stroke-width: 1px;
+	stroke: black;
+	fill: none;
+}
+
+circle {
+	cursor: pointer;
+}
+
+.tooltip {
+	background-color: #ccc;
+	padding: 10px;
+	position: absolute;
 }
