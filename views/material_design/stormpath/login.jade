@@ -2,26 +2,36 @@ extends ../layout.jade
 
 block content
 	.customContainer
-		if status
-			.mdl-grid
-				.mdl-cell.mdl-cell--12-col.mdl-cell--8-col-tablet
-					.mdl-card.mdl-shadow--2dp
-						.mdl-card__title
-							h2.mdl-card__title-text Login
-						.mdl-card__supporting-text Please login to get analytics data
-		if formErrors
-			each error in formErrors
-				.mdl-grid
-					.mdl-cell.mdl-cell--12-col.mdl-cell--8-col-tablet
-						.mdl-card.mdl-shadow--2dp
-							.mdl-card__title
-								h2.mdl-card__title-text Error
-							.mdl-card__supporting-text #{error.error}
 		.mdl-grid
 			.mdl-cell.mdl-cell--12-col.mdl-cell--8-col-tablet
 				.login-card.mdl-card.mdl-shadow--2dp
 					.mdl-card__title
 						h2.mdl-card__title-text Login
+					.mdl-card__actions.mdl-card--border
+					if formErrors
+						each error in formErrors
+							.mdl-card__supporting-text.error 
+								span 
+									i.material-icons.loginstatusicon error 
+									|#{error.error}
+					if status
+						if status === 'unverified'
+							.mdl-card__supporting-text Your account verification email has been sent!
+								p Before you can log into your account, you need to activate your account by clicking the link we sent to your inbox.
+								p Didn't get the email? <a href="#{stormpathConfig.web.verifyEmail.uri}">Click Here</a>.
+						if status === 'verified'
+							.mdl-card__supporting-text Your Account Has Been Verified
+								p You may now login.
+						if status === 'created'
+							.mdl-card__supporting-text Your Account Has Been Created
+								p You may no login.
+						if status === 'reset'
+							.mdl-card__supporting-text Password Reset Successfully
+								p You can now login with your new password.
+						if status === 'forgot'
+							.mdl-card__supporting-text Password Reset Requested
+								p If an account exists for the email provided, you will receive an email shortly.
+						.mdl-card__actions.mdl-card--border
 					.mdl-card__supporting-text Please login to get analytics data
 					.mdl-grid
 						.mdl-cell.mdl-cell--12-col.mdl-cell--8-col-tablet

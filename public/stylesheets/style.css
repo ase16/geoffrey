@@ -28,6 +28,14 @@ a {
 	color: #00B7FF;
 }
 
+.error {
+	color: red;
+}
+
+.loginstatusicon {
+	font-size:18px;
+}
+
 path, line {
 	stroke-width: 1px;
 	stroke: black;
