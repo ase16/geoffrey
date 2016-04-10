@@ -10,7 +10,7 @@ var stormpath = {										// https://github.com/stormpath/express-stormpath/blo
 	web: {
 		register: {
 			enabled: true,
-				form: {
+			form: {
 				fields: {
 					givenName: {
 						enabled: false
@@ -19,8 +19,8 @@ var stormpath = {										// https://github.com/stormpath/express-stormpath/blo
 						enabled: false
 					}
 				}
-			}
-			// view: path.join(__dirname,'views/stormpath','register.jade')
+			},
+			view: path.join(__dirname,'../views/material_design/stormpath','register.jade')
 		},
 		login: {
 			enabled: true,

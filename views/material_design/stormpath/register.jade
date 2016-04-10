@@ -1,0 +1,27 @@
+extends ../layout.jade
+
+block content
+	.customContainer
+		.mdl-grid
+			.mdl-cell.mdl-cell--12-col.mdl-cell--8-col-tablet
+				.login-card.mdl-card.mdl-shadow--2dp
+					.mdl-card__title
+						h2.mdl-card__title-text Create Account
+					.mdl-card__actions.mdl-card--border
+					if errors
+						each error in errors
+							.mdl-card__supporting-text.error 
+								span 
+									i.material-icons.loginstatusicon error 
+									|#{error.message}
+					.mdl-grid
+						.mdl-cell.mdl-cell--12-col.mdl-cell--8-col-tablet
+							form(method='post',role='form')
+								each field in formModel.fields
+									.mdl-grid
+										.mdl-cell.mdl-cell--12-col.mdl-cell--8-col-tablet.mdl-textfield.mdl-js-textfield.mdl-textfield--floating-label
+											input.mdl-textfield__input(placeholder=field.placeholder, name=field.name, value=value, required=field.required, type=field.type)
+											label.mdl-textfield__label #{field.label}
+								.mdl-grid
+									.mdl-cell.mdl-cell--12-col.mdl-cell--8-col-tablet
+										button.mdl-button.mdl-js-button.mdl-button--raised.mdl-button--colored(type='submit') Create Account

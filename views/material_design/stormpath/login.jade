@@ -6,7 +6,8 @@ block content
 			.mdl-cell.mdl-cell--12-col.mdl-cell--8-col-tablet
 				.login-card.mdl-card.mdl-shadow--2dp
 					.mdl-card__title
-						h2.mdl-card__title-text Login
+						h2.mdl-card__title-text Login or &nbsp
+							a(href= stormpathConfig.web.register.uri) Create Account
 					.mdl-card__actions.mdl-card--border
 					if formErrors
 						each error in formErrors
