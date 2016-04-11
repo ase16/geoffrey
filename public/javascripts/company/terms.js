@@ -5,8 +5,8 @@
 	var termsHTML = '<div class="terms"></div>';
 
 	var newTermFormHTML = '<form class="newTerm"></form>';
-	var newTermInputHTML = '<input class="newTerm" name="term" type="text" placeholder="Place new term here" />';
-	var newTermButtonHTML = '<button class="newTerm" name="new" type="submit">Add New Term</button>';
+	var newTermInputHTML = '<div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label"><input class="mdl-textfield__input newTerm" name="term" type="text" id="newTerm" /><label class="mdl-textfield__label" for="newTerm">Place new term here</label>';
+	var newTermButtonHTML = '<button class="mdl-button mdl-js-button mdl-button--raised mdl-button--colored newTerm" name="new" type="submit">Add New Term</button>';
 
 	var termsListHTML = '<ul class="terms"></ul>';
 	var termsListItemHTML = '<li class="term"></li>';
@@ -14,7 +14,7 @@
 	var displayTermFormHTML = '<form class="displayTerm"></form>';
 	var displayTermSpanHTML = '<span class="displayTerm"></span>';
 	var displayTermInputHTML = '<input name="term" type="hidden" />';
-	var displayTermDeleteButtonHTML = '<button class="displayTermDelete" name="delete">Delete</button>';
+	var displayTermDeleteButtonHTML = '<button class="mdl-button mdl-button--icon termDeleteButton" name="delete"><i class="material-icons">clear</i></button>';
 	var displayTermDisabledDeleteButtonHTML = '<button class="displayTermDelete" name="delete" disable="disable">Delete</button>';
 
 	// ToDo: Use this html building blocks to enable editing of terms

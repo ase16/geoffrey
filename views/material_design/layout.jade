@@ -5,6 +5,7 @@ html
 		link(rel='stylesheet', href='/material-design-lite/material.min.css')
 		link(rel='stylesheet', href='https://fonts.googleapis.com/icon?family=Material+Icons')
 		link(rel='stylesheet', href='/stylesheets/style.css')
+		script(src='https://code.jquery.com/jquery-2.2.2.min.js')
 
 
 	body
@@ -14,20 +15,19 @@ html
 					span.mdl-layout-title Geoffrey
 					.mdl-layout-spacer
 					nav.mdl-navigation
-						a.mdl-navigation__link(href="#") Sample 1
-						a.mdl-navigation__link(href="#") Sample 2
-						a.mdl-navigation__link(href="#") Sample 3
 						if user
+							a.mdl-navigation__link(href="/company/main") Home
+							a.mdl-navigation__link(href="/company/term-management") Term-Management
 							form#logout(method='post' action='/logout')
 								a.mdl-navigation__link(href='#', onclick='logout()') Logout
 			.mdl-layout__drawer
 				span.mdl-layout-title Geoffrey
 				nav.mdl-navigation
-					a.mdl-navigation__link(href="#") Sample 1
-					a.mdl-navigation__link(href="#") Sample 2
-					a.mdl-navigation__link(href="#") Sample 3
 					if user
-						a.mdl-navigation__link(href="#") Logout
+						a.mdl-navigation__link(href="/company/main") Home
+						a.mdl-navigation__link(href="/company/term-management") Term-Management
+						form#logout(method='post' action='/logout')
+							a.mdl-navigation__link(href='#', onclick='logout()') Logout
 			main.mdl-layout__content
 				block content
 
@@ -35,5 +35,4 @@ html
 			var logout = function() {
 				document.getElementById('logout').submit()
 			}
-		script(src='https://code.jquery.com/jquery-2.2.2.min.js')
-		script(src='material-design-lite/material.min.js')
+		script(src='/material-design-lite/material.min.js')

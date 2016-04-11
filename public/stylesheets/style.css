@@ -51,3 +51,7 @@ circle {
 	padding: 10px;
 	position: absolute;
 }
+
+.termDeleteButton {
+	font-size: 12px;
+}
