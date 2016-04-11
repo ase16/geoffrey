@@ -1,49 +1,23 @@
 var config = require('config');
-var assert = require('assert');
 
 var Log = require('winston');
 Log.level = config.get('log.level');
 
-var MongoClient = require('mongodb').MongoClient;
-var ObjectId = require('mongodb').ObjectID;
+//var MongoClient = require('mongodb').MongoClient;
+//var ObjectId = require('mongodb').ObjectID;
+const db = require('./dbModule.js');
 
 var twit = require('twit');
 
 
-// Useful links:
+// Useful links for the Twitter API:
 // Tweet JSON: https://dev.twitter.com/overview/api/tweets
 // Stream API: https://dev.twitter.com/streaming/overview
 
-var mongodb;
-
-var stats = {timestamp: 0, numberoftweets: 0};
-
-// returns the mongodb connection string
-var mongodbUrl = function() {
-    return 'mongodb://' +
-        config.get('mongodb.host') +
-        ':' + config.get('mongodb.port') +
-        '/' + config.get('mongodb.dbname');
-};
-
-// connects to the mongodb
-var dbConnect = function(url, connected) {
-    MongoClient.connect(url, function(err, database) {
-        if (err) {
-            Log.error('DB: Could not connect to mongodb server: %s', url, err);
-            process.exit(1);
-        } else {
-            Log.info('DB: Connected correctly to mongodb server: %s', url);
-            mongodb = database;
-            connected();
-        }
-    });
-};
-
-// closes the mongodb connection
-var dbClose = function(db) {
-    db.close();
-    Log.info('DB: closed connection.')
+// tweets in db
+var stats = {
+    timestamp: 0,
+    numberOfTweets: 0
 };
 
 // returns a list of keywords
@@ -54,23 +28,17 @@ function getKeywords() {
     var fs = require('fs');
     var keywords = fs.readFileSync('keywords.txt').toString().split('\n');
     keywords = keywords.filter(function(k){return k.length>1});
+    keywords = keywords.map(function(k){return k.toLowerCase()});
     return keywords;
 };
 
-// adds a tweet to the mongodb collection
-function insertTweet(db, tweet, callback) {
-    tweet['analyzed'] = false;      // set to true if this tweet was analyzed successfully.
-    tweet['inProgress'] = false;    // set to true if this tweet is being processed right now.
-    //console.log(tweet);
-    db.collection('tweets').insertOne(tweet, callback);
-};
-
-// processes incoming tweet
+// processes incoming tweet. The tweet is inserted without
+// additional processing into the tweets collection.
 function onNewTweet(tweet) {
     Log.debug('New Tweet:\t[id: %s, text: %s]', tweet['id_str'], tweet['text']);
     //console.log(tweet);
 
-    insertTweet(mongodb, tweet, function (err, result) {
+    db.insertTweet(tweet, function (err, result) {
         if (err) {
             Log.error('Could not insert tweet:', err);
         } else {
@@ -89,6 +57,8 @@ function subscribeToTweets(onNewTweet) {
     stream.on('tweet', onNewTweet);
 
     // set up some logging
+    // the messages are described here:
+    // https://dev.twitter.com/streaming/overview/messages-types
     stream.on('connect', function (request) {
         Log.info('Twitter - Connect.');
     });
@@ -113,55 +83,40 @@ function subscribeToTweets(onNewTweet) {
     return stream;
 };
 
+// prints some statistics about the tweets in the DB and the received tweets.
 function logStats(db) {
-    db.collection('tweets').count(function(err, count) {
+    db.countTweets(function(err, count) {
         if (!err) {
             var now = new Date().getTime();
-            tweetspersec = ((count-stats['numberoftweets'])/(now-stats['timestamp'])*1000).toFixed(1);
-            stats = {'timestamp': now, 'numberoftweets': count};
+            var newTweets = count-stats['numberOfTweets'];
+            var timeSpan = now-stats['timestamp'];
+            var tweetspersec = (newTweets/timeSpan*1000).toFixed(1);
+            stats = {
+                'timestamp': now,
+                'numberOfTweets': count
+            };
             Log.info('%d tweets in database, currently fetching %s tweets/second.', count, tweetspersec);
         }
     });
 };
 
+// sets up the tweets collection and logging stats
 function onDbConnected() {
-    // create collection for tweets and some indexes
-    mongodb.createCollection('tweets', function(err, tweets) {
-        var indexCreated = function(err, indexName) {
-            if (!err) {
-                Log.info('Index created: %s', indexName)
-            } else {
-                Log.error('Could not create index: %s', err);
-            }
-        };
-
-        // id_str is the unique key of twitter.
-        tweets.createIndex({'id_str': 1}, {unique:true, sparse: true}, indexCreated);
-
-        // add indexes for finding tweets not yet analyzed/processed
-        tweets.createIndex({'inProgress': 1, 'analyzed': 1}, {'sparse': true}, indexCreated);
-        tweets.createIndex({'analyzed': 1}, {sparse: true}, indexCreated);
-        tweets.createIndex({'inProgress': 1}, {sparse: true}, indexCreated);
-
-        // text index on the tweets
-        tweets.createIndex({'text': 'text'}, {}, indexCreated);
-
+    db.createTweetsCollection(function(err) {
+        // log number of tweets in the db from time to time.
+        db.countTweets(function(err, count) {
+            stats = {
+                timestamp: new Date().getTime(),
+                numberOfTweets: count
+            };
+        });
+        setInterval(logStats, 10*1000, db);
     });
-
-    // log number of tweets in the collection
-    mongodb.collection('tweets').count(function(err, count) {
-        stats = {timestamp: new Date().getTime(), numberoftweets: count};
-    });
-    setInterval(logStats, 10*1000, mongodb);
-
 };
 
-var dbUrl = mongodbUrl();
-dbConnect(dbUrl, onDbConnected);
 
+db.connect(onDbConnected);
 
-var twitterCredentials = config.get('credentials.twitter');
+var twitterCredentials = config.get('twitter');
 var twitter = new twit(twitterCredentials);
 var stream = subscribeToTweets(onNewTweet);
-
-
