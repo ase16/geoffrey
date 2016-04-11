@@ -117,6 +117,8 @@ const db = {
                 .toArray( function(err, docs){
                     callback(null, docs.map((d) => d.term));
                 })
+        } else {
+            callback("Not connected", []);
         }
     },
 
