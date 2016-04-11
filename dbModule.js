@@ -117,8 +117,67 @@ const db = {
                 .toArray( function(err, docs){
                     callback(null, docs.map((d) => d.term));
                 })
+        } else {
+            callback("Not connected", []);
         }
+    },
+
+    // @param callback fn(err)
+    createTweetsCollection: function(callback) {
+        if (isConnected()) {
+            // create collection for tweets and indexes
+            mongodb.createCollection('tweets', function (err, tweets) {
+                // on index created callback
+                var indexCreated = function (err, indexName) {
+                    if (!err) {
+                        Log.info('Index created: %s', indexName)
+                    } else {
+                        Log.error('Could not create index: %s', err);
+                    }
+                };
+
+                // 'id_str' is the unique key of twitter ('id' does not work correctly due to JS limitations).
+                tweets.createIndex({'id_str': 1}, {unique: true, sparse: true}, indexCreated);
+
+                // add indexes for finding tweets not yet analyzed/processed
+                tweets.createIndex({'inProgress': 1, 'analyzed': 1}, {'sparse': true}, indexCreated);
+                tweets.createIndex({'analyzed': 1}, {sparse: true}, indexCreated);
+                tweets.createIndex({'inProgress': 1}, {sparse: true}, indexCreated);
+
+                // text index on the tweets (word lookup)
+                tweets.createIndex({'text': 'text'}, {}, indexCreated);
+
+                callback(err);
+            });
+        } else {
+            callback("Not connected");
+        }
+    },
+
+    // @param callback fn(err, count)
+    countTweets: function(callback) {
+        if (isConnected()) {
+            mongodb.collection('tweets').count(callback);
+        } else {
+            callback("Not connected", 0)
+        }
+    },
+
+    // Add a new tweet to the tweets collection
+    // @param tweet JSON as received from the Twitter API
+    // @param callback fn(err, res)
+    insertTweet: function(tweet, callback) {
+        if (isConnected()) {
+            tweet['analyzed'] = false;      // set to true if this tweet was analyzed successfully.
+            tweet['inProgress'] = false;    // set to true if this tweet is being processed right now.
+            mongodb.collection('tweets').insertOne(tweet, callback);
+        } else {
+            callback("Not connected", null);
+        }
+
     }
+
+
 };
 
 module.exports = db;

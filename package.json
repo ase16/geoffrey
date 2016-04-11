@@ -10,7 +10,7 @@
     "type": "git",
     "url": "git+https://github.com/ase16/geoffrey.git"
   },
-  "author": "Oliver Leumann",
+  "author": "Oliver Leumann, Andreas Albrecht, Roy Rutishauser, Shanmathuran Sritharan",
   "license": "MIT",
   "dependencies": {
     "async": "^1.5.2",
@@ -23,11 +23,13 @@
     "moment": "^2.12.0",
     "moment-timezone": "^0.5.3",
     "mongodb": "^2.1.14",
+    "connect-mongo": "^1.1.0",
     "morgan": "^1.7.0",
     "sentiment": "^1.0.6",
     "twit": "^2.2.3",
     "material-design-lite": "^1.1.2",
-    "winston": "^2.2.0"
+    "winston": "^2.2.0",
+    "googleapis": "^3.1.0"
   },
   "devDependencies": {
     "errorhandler": "^1.4.3"
