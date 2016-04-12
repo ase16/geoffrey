@@ -1,5 +1,5 @@
 // a pseudo-map with format dataPerTerm[term] = sentiments
-var dataPerTerm = {}
+var dataPerTerm = {};
 
 // load the analyzed data
 $.ajax({
@@ -8,44 +8,41 @@ $.ajax({
     dataType: 'json',
     cache: false,
     success: function( res ) {
-
-			res.terms.forEach(function(t) {
-				var elem = $('<div>').text(t).click(function() {
-					$('#viz-wrapper').children().remove();
-					$('#viz-wrapper').append('<span>loading...</span>');
-					getData(t);
-				})
-				$('#terms-wrapper').append(elem)
-			})
+		res.terms.forEach(function(t) {
+			var elem = $('<div>').text(t).click(function() {
+				$('#viz-wrapper').children().remove();
+				$('#viz-wrapper').append('<span>loading...</span>');
+				getData(t);
+			});
+			$('#terms-wrapper').append(elem);
+		})
     },
-		error: function() {
-			alert("something went wrong")
-		}
+	error: function() {
+		alert("something went wrong")
+	}
 });
 
 var getData = function(term) {
 console.log("get data for term", term);
 	if ( ! dataPerTerm.hasOwnProperty(term)) {
 		// data not yet loaded
-		$.post('/viz/tweets',{'term' : term},
+		$.post('/company/viz/fetch-tweets',{'term' : term},
 			function(data) {
-				dataPerTerm[term] = data
-				render(data, term)
+				dataPerTerm[term] = data;
+				render(data, term);
 			}
-		)
+		);
 	} else {
-		console.log("already loaded data for term", term)
-		render(dataPerTerm[term], term)
+		console.log("already loaded data for term", term);
+		render(dataPerTerm[term], term);
 	}
-}
+};
 
 var render = function(data, term) {
 	console.log("render accepted", data);
 
 	$('#viz-wrapper').children().remove();
-	$('#viz-wrapper').append($('<h2>').text('Sentiment analysis for the term ' + term))
-
-//	console.log(data);
+	$('#viz-wrapper').append($('<h2>').text('Sentiment analysis for the term ' + term));
 
 	var w = 800
 	var h = 400
@@ -133,4 +130,4 @@ var render = function(data, term) {
 		 .attr('transform', 'translate(' +  margin.left + ',0)')
 	   .call(yAxis);
 
-}
+};
