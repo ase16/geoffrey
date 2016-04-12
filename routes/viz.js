@@ -30,9 +30,9 @@ router.post('/tweets', function(req, res, next) {
 		var pastDate = moment().subtract(3, 'day').format("YYYY-M-D");
 		var searchQuery = '' + searchParam + ' since:' + pastDate;
 
-		twitter.get('search/tweets', {q: searchQuery, count:100}, function(err, data) {
-			var score = performAnalysis(data['statuses']);	// Two objects, 'statuses' and 'search_metadata', are contained in the 'data'-object
-			callback(err, score);
+		twitter.get('search/tweets', {q: searchQuery, count:200}, function(err, data) {
+			var sentiments = performAnalysis(data['statuses']);
+			callback(err, sentiments);
 		});
 	};
 
