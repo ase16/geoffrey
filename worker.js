@@ -12,7 +12,6 @@ var Log = require('winston');
 Log.level = config.get('log.level');
 
 var MongoClient = require('mongodb').MongoClient;
-var ObjectId = require('mongodb').ObjectID;
 
 var mongodb;
 
@@ -55,7 +54,7 @@ function logStats(db) {
             Log.info('%d tweets analyzed, analyzing %s tweets/second.', count, tweetspersec);
         }
     });
-};
+}
 
 function doSomeWork(text) {
     var words = text.split(' ').sort();
@@ -63,7 +62,7 @@ function doSomeWork(text) {
         Log.info('\t%s', w);
     });
     return words;
-};
+}
 
 function analyzeTweet() {
     mongodb.collection('tweets').findOneAndUpdate(
@@ -102,7 +101,7 @@ function analyzeTweet() {
             }
         }
     );
-};
+}
 
 function nextTweet() {
     eventEmitter.emit('nextTweet');
@@ -117,10 +116,7 @@ function onDbConnected() {
 
     eventEmitter.on('nextTweet', analyzeTweet);
     nextTweet();
-
-};
-
+}
 
 var dbUrl = mongodbUrl();
 dbConnect(dbUrl, onDbConnected);
-

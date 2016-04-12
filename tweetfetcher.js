@@ -48,10 +48,8 @@ function getKeywords(callback) {
         keywords = keywords.filter(function(k){return k.length>1});
         keywords = keywords.map(function(k){return k.toLowerCase()});
         callback(keywords);
-
     });
-
-};
+}
 
 // processes incoming tweet. The tweet is inserted without
 // additional processing into the tweets collection.
@@ -66,7 +64,7 @@ function onNewTweet(tweet) {
             Log.debug('Inserted tweet into the database.');
         }
     });
-};
+}
 
 // set up twitter stream and subscribe to keywords
 // @param onNewTweet function to call when new tweet is received
@@ -106,7 +104,7 @@ function subscribeToTweets(callback) {
 
         callback(stream);
     });
-};
+}
 
 // prints some statistics about the tweets in the DB and the received tweets.
 function logStats(db) {
@@ -116,7 +114,7 @@ function logStats(db) {
             var newTweets = count-stats['numberOfTweets'];
             var timeSpan = now-stats['timestamp'];
             var tweetspersec = (newTweets/timeSpan*1000).toFixed(1);
-            if (isNaN(tweetspersec)) { tweetspersec=0 };
+            if (isNaN(tweetspersec)) { tweetspersec=0 }
             stats = {
                 'timestamp': now,
                 'numberOfTweets': count
@@ -124,7 +122,7 @@ function logStats(db) {
             Log.info('%d tweets in database, currently fetching %s tweets/second.', count, tweetspersec);
         }
     });
-};
+}
 
 // sets up the tweets collection and logging stats
 function setupTweetsCollection() {
@@ -139,8 +137,7 @@ function setupTweetsCollection() {
         });
         setInterval(logStats, 10*1000, db);
     });
-};
-
+}
 
 var twitterCredentials = config.get('twitter');
 var twitter = new twit(twitterCredentials);
@@ -152,5 +149,3 @@ db.connect(function() {
         twitterStream = stream;
     });
 });
-
-
