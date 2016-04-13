@@ -1,9 +1,11 @@
+'use strict'
+
 const config = require('config');
 
 const Log = require('winston');
 Log.level = config.get('log.level');
 
-const db = require('./dbModule.js');
+let db;
 
 // Twitter API module
 // https://github.com/ttezel/twit
@@ -108,20 +110,7 @@ function subscribeToTweets(callback) {
 
 // prints some statistics about the tweets in the DB and the received tweets.
 function logStats(db) {
-    db.countTweets(function(err, count) {
-        if (!err) {
-            var now = new Date().getTime();
-            var newTweets = count-stats['numberOfTweets'];
-            var timeSpan = now-stats['timestamp'];
-            var tweetspersec = (newTweets/timeSpan*1000).toFixed(1);
-            if (isNaN(tweetspersec)) { tweetspersec=0 }
-            stats = {
-                'timestamp': now,
-                'numberOfTweets': count
-            };
-            Log.info('%d tweets in database, currently fetching %s tweets/second.', count, tweetspersec);
-        }
-    });
+    tweetfetcher.getStats((data) => Log.info(data))
 }
 
 // sets up the tweets collection and logging stats
@@ -143,9 +132,38 @@ var twitterCredentials = config.get('twitter');
 var twitter = new twit(twitterCredentials);
 var twitterStream;
 
-db.connect(function() {
-    setupTweetsCollection();
-    subscribeToTweets(function(stream) {
-        twitterStream = stream;
-    });
-});
+const tweetfetcher = {
+
+    init: function(dbModule, callback) {
+
+        db = dbModule;
+
+        setupTweetsCollection();
+        subscribeToTweets(function(stream) {
+            twitterStream = stream;
+            callback()
+            console.log("tweetfetcher initialized")
+        });
+
+
+    },
+
+    getStats : function(callback) {
+        db.countTweets(function(err, count) {
+            if (!err) {
+                var now = new Date().getTime();
+                var newTweets = count-stats['numberOfTweets'];
+                var timeSpan = now-stats['timestamp'];
+                var tweetspersec = (newTweets/timeSpan*1000).toFixed(1);
+                if (isNaN(tweetspersec)) { tweetspersec=0 }
+                stats = {
+                    'timestamp': now,
+                    'numberOfTweets': count
+                };
+                callback(count + ' tweets in database, currently fetching ' + tweetspersec + ' tweets/second.');
+            }
+        });
+    }
+}
+
+module.exports = tweetfetcher;
