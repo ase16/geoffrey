@@ -23,7 +23,7 @@ var viz = {
 		}
 
 		// Establish the twitter config (grab your keys at dev.twitter.com)
-		var twitterCredentials = config.get('credentials.twitter');
+		var twitterCredentials = config.get('twitter');
 		var twitter = new twit(twitterCredentials);
 
 		var pastDate = moment().subtract(3, 'day').format("YYYY-M-D");
