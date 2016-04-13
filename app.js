@@ -18,11 +18,19 @@ var admin = require('./routes/admin');
 var company = require('./routes/company');
 var viz = require('./routes/viz');
 
-// db-object
+// db
 const db = require('./dbModule.js');
 
+// socket handler
+const socketHandler = require('./sockethandler.js');
+const http = require('http');
+
+const tweetfetcher = require('./tweetfetcher.js')
+
 // Create express application
-var app = express();													// --> http://expressjs.com/en/4x/api.html#app
+const app = express();													// --> http://expressjs.com/en/4x/api.html#app
+// store the server in a variable to pass it later on to socket.io
+const server = http.createServer(app)
 
 // Set up view/template engine and make static files accessible
 app.set('view engine', 'jade');											// Specify which template-engine to use (we do not need to "require" it since it is handled via ExpressJS)
@@ -42,8 +50,12 @@ app.use('/viz', viz);
 
 // Our server can start listening as soon as the Stormpath SDK has been initialized
 app.on('stormpath.ready', function() {
-	app.listen(3000, function () {
-		console.log('Geoffrey is listening on port 3000!');
-		db.connect(() => { console.log("Geoffrey is ready")})
+	server.listen(3000, function () {
+		console.log('Geoffrey is listening on port 3000');
+		db.connect(() => {
+			tweetfetcher.init(db, () => {
+				socketHandler.init(server, () => console.log('Geoffrey is ready'));
+			})
+		})
 	});
 });

@@ -22,7 +22,7 @@ router.post('/tweets', function(req, res, next) {
 	var term = req.body.term
 
 	// Establish the twitter config (grab your keys at dev.twitter.com)
-	var twitterCredentials = config.get('credentials.twitter');
+	var twitterCredentials = config.get('twitter');
 	var twitter = new twit(twitterCredentials);
 
 	// Create a named function that is inkoved further below by the async.parallel
