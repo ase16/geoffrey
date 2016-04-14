@@ -24,21 +24,21 @@ var terms = {
 
 			req.user.customData.terms.push(term);
 			req.user.customData.save(function(err, data) {
-
 				if (!err) {
 					db.insertTerm(term, req.user.email, function(err) {
 						if (!err) return callback(null, data.terms);
 						else callback(err)
-					})
+					});
 				}
-				else	callback(err)
-
+				else {
+					callback(err);
+				}
 			});
 		}
 		else {
 			// ToDo: Implement some clean error handling
 			// roy: maybe this way
-			return callback(new Error('term is not defined'))
+			return callback(new Error('term is not defined'));
 		}
 	},
 

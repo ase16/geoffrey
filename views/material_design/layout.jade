@@ -1,0 +1,40 @@
+doctype html
+html
+	head
+		title= title
+		link(rel='stylesheet', href='/material-design-lite/material.min.css')
+		link(rel='stylesheet', href='https://fonts.googleapis.com/icon?family=Material+Icons')
+		link(rel='stylesheet', href='/stylesheets/style.css')
+		script(src='https://code.jquery.com/jquery-2.2.2.min.js')
+
+
+	body
+		.header-image.mdl-layout.mdl-js-layout
+			header.mdl-layout__header.mdl-layout__header--transparent
+				.mdl-layout__header-row
+					span.mdl-layout-title Geoffrey
+					.mdl-layout-spacer
+					nav.mdl-navigation
+						if user
+							a.mdl-navigation__link(href="/company/main") Home
+							a.mdl-navigation__link(href="/company/term-management") Term-Management
+							a.mdl-navigation__link(href="/company/viz") Sentiment-Analysis
+							form#logout(method='post' action='/logout')
+								a.mdl-navigation__link(href='#', onclick='logout()') Logout
+			.mdl-layout__drawer
+				span.mdl-layout-title Geoffrey
+				nav.mdl-navigation
+					if user
+						a.mdl-navigation__link(href="/company/main") Home
+						a.mdl-navigation__link(href="/company/term-management") Term-Management
+						a.mdl-navigation__link(href="/company/viz") Sentiment-Analysis
+						form#logout(method='post' action='/logout')
+							a.mdl-navigation__link(href='#', onclick='logout()') Logout
+			main.mdl-layout__content
+				block content
+
+		script.
+			var logout = function() {
+				document.getElementById('logout').submit()
+			}
+		script(src='/material-design-lite/material.min.js')

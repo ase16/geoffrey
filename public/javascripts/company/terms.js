@@ -5,8 +5,8 @@
 	var termsHTML = '<div class="terms"></div>';
 
 	var newTermFormHTML = '<form class="newTerm"></form>';
-	var newTermInputHTML = '<input class="newTerm" name="term" type="text" placeholder="Place new term here" />';
-	var newTermButtonHTML = '<button class="newTerm" name="new" type="submit">Add New Term</button>';
+	var newTermInputHTML = '<div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label"><input class="mdl-textfield__input newTerm" name="term" type="text" id="newTerm" /><label class="mdl-textfield__label" for="newTerm">Place new term here</label>';
+	var newTermButtonHTML = '<button class="mdl-button mdl-js-button mdl-button--raised mdl-button--colored newTerm" name="new" type="submit">Add New Term</button>';
 
 	var termsListHTML = '<ul class="terms"></ul>';
 	var termsListItemHTML = '<li class="term"></li>';
@@ -14,8 +14,8 @@
 	var displayTermFormHTML = '<form class="displayTerm"></form>';
 	var displayTermSpanHTML = '<span class="displayTerm"></span>';
 	var displayTermInputHTML = '<input name="term" type="hidden" />';
-	var displayTermDeleteButtonHTML = '<button class="displayTermDelete" name="delete">Delete</button>';
-	var displayTermDisabledDeleteButtonHTML = '<button class="displayTermDelete" name="delete" disable="disable">Delete</button>';
+	var displayTermDeleteButtonHTML = '<button class="mdl-button mdl-button--icon termDeleteButton" name="delete"><i class="material-icons">clear</i></button>';
+	var displayTermDisabledDeleteButtonHTML = '<button class="mdl-button mdl-button--icon termDeleteButton" name="delete" disable="disable"><i class="material-icons">clear</i></button>';
 
 	// ToDo: Use this html building blocks to enable editing of terms
 	// var displayTermEditButtonHTML = '<button class="displayTermEdit" name="edit">Edit</button>';
@@ -89,19 +89,20 @@
 
 	function createTerm(event) {
 		event.preventDefault();
-		var formData = $(this).serializeObject();
+		var formData = $(this).serializeObject();	// Get newly submitted term
+		$('#newTerm').val('');						// Manually clear input field
 
-		// Optimistic UI
-		$('ul.terms').append(
-			$(termsListItemHTML).append(
-				$(displayTermFormHTML).append(
-					$(displayTermSpanHTML).text(formData.term + ' (Optimistic UI)'),
-					$(displayTermInputHTML).val(formData.term),
-					$(displayTermDisabledDeleteButtonHTML)
-				)
+		// Prepare new term to be added to the terms-list
+		var $termsListItem = $(termsListItemHTML).append(
+			$(displayTermFormHTML).append(
+				$(displayTermSpanHTML).addClass('newTermOptimmisticUI').text(formData.term),
+				$(displayTermInputHTML).val(formData.term),
+				$(displayTermDisabledDeleteButtonHTML)
 			)
 		);
-		$('form.displayTerm').on('submit', deleteTerm);
+
+		// Optimistic UI
+		$('ul.terms').append($termsListItem);
 
 		var req = {
 			url: '/company/terms',
@@ -112,6 +113,7 @@
 			success: function( res ) {
 				console.log('The response from the server is = ', res);
 				if ( res.hasOwnProperty('err') ) {
+					$termsListItem.remove();		// In case the server responds with an error, revert Optimistic UI
 				}
 				else if( res.hasOwnProperty('terms') ) {
 					drawTerms(res.terms);

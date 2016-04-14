@@ -10,7 +10,7 @@ var stormpath = {										// https://github.com/stormpath/express-stormpath/blo
 	web: {
 		register: {
 			enabled: true,
-				form: {
+			form: {
 				fields: {
 					givenName: {
 						enabled: false
@@ -19,14 +19,14 @@ var stormpath = {										// https://github.com/stormpath/express-stormpath/blo
 						enabled: false
 					}
 				}
-			}
-			// view: path.join(__dirname,'views/stormpath','register.jade')
+			},
+			view: path.join(__dirname,'../views/material_design/stormpath','register.jade')
 		},
 		login: {
 			enabled: true,
 			uri: '/',
-			nextUri: '/authentication'
-			// view: path.join(__dirname,'views/stormpath','login.jade')
+			nextUri: '/authentication',
+			view: path.join(__dirname,'../views/material_design/stormpath','login.jade')
 		},
 		// http://docs.stormpath.com/nodejs/express/latest/logout.html#configuration-options
 		logout: {
