@@ -55,3 +55,17 @@ circle {
 .termDeleteButton {
 	font-size: 12px;
 }
+
+#viz-wrapper { margin-top: 20px; }
+
+#terms-wrapper {
+	display: flex;
+	flex-direction: row;
+	align-items: center;
+}
+
+#terms-wrapper > div {
+	padding: 10px;
+	border: 1px solid black;
+	margin-right: 5px;
+}

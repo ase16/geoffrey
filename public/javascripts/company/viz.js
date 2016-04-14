@@ -1,8 +1,48 @@
-// load the analyzed data
-$.post('/viz/tweets', {'term' : 'clinton'}, function(data) { visualize(data)})
+// a pseudo-map with format dataPerTerm[term] = sentiments
+var dataPerTerm = {};
 
-var visualize = function(data) {
-	console.log(data);
+// load the analyzed data
+$.ajax({
+    url: '/company/terms',
+    type: 'get',
+    dataType: 'json',
+    cache: false,
+    success: function( res ) {
+		res.terms.forEach(function(t) {
+			var elem = $('<div>').text(t).click(function() {
+				$('#viz-wrapper').children().remove();
+				$('#viz-wrapper').append('<span>loading...</span>');
+				getData(t);
+			});
+			$('#terms-wrapper').append(elem);
+		})
+    },
+	error: function() {
+		alert("something went wrong")
+	}
+});
+
+var getData = function(term) {
+console.log("get data for term", term);
+	if ( ! dataPerTerm.hasOwnProperty(term)) {
+		// data not yet loaded
+		$.post('/company/viz/fetch-tweets',{'term' : term},
+			function(data) {
+				dataPerTerm[term] = data;
+				render(data, term);
+			}
+		);
+	} else {
+		console.log("already loaded data for term", term);
+		render(dataPerTerm[term], term);
+	}
+};
+
+var render = function(data, term) {
+	console.log("render accepted", data);
+
+	$('#viz-wrapper').children().remove();
+	$('#viz-wrapper').append($('<h2>').text('Sentiment analysis for the term ' + term));
 
 	var w = 800
 	var h = 400
@@ -10,7 +50,7 @@ var visualize = function(data) {
 	var marginTop = 5
 
 	var yScale = d3.scale.linear()
-		 .domain([-1, 1])
+		 .domain([1, -1])
 		 .range([margin.top, h - margin.top - margin.bottom]);
 
 	 // get max and min dates - this assumes data is sorted
@@ -47,7 +87,7 @@ var visualize = function(data) {
     .style("opacity", 0);
 
 	//Create SVG element
-	var svg = d3.select("body")
+	var svg = d3.select("#viz-wrapper")
 				.append("svg")
 				.attr("width", w)
 				.attr("height", h)
@@ -70,7 +110,7 @@ var visualize = function(data) {
         	.duration(200)
           .style("opacity", .9);
 
-					div.html(d.tweet.created_at + "<br/>"  + d.words)
+					div.html(d.tweet.created_at + "<br/>"  + d.tweet.text)
           	.style("left", (d3.event.pageX + 10) + "px")
           	.style("top", (d3.event.pageY - 28) + "px");
             })
@@ -79,23 +119,6 @@ var visualize = function(data) {
                 .duration(500)
                 .style("opacity", 0);
         });
-
-	// svg.selectAll("text")
-	//    .data(data)
-	//    .enter()
-	//    .append("text")
-	//    .text(function(d) {
-	// 		 	return Math.round(d.comparative * 100) / 100
-	//    })
-	//    .attr("x", function(d, i) {
-	//    		return xScale(new Date(d.tweet.created_at))
-	//    })
-	//    .attr("y", function(d) {
-	//    		return yScale(d.comparative);
-	//    })
-	//    .attr("font-family", "sans-serif")
-	//    .attr("font-size", "13px")
-	//    .attr("fill", "black")
 
 	 svg.append('g')
 	     .attr('class', 'x axis')
@@ -107,4 +130,4 @@ var visualize = function(data) {
 		 .attr('transform', 'translate(' +  margin.left + ',0)')
 	   .call(yAxis);
 
-}
+};

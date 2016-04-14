@@ -16,4 +16,11 @@ router.get('/main', function(req, res, next) {
 	});
 });
 
+router.get('/fetcherlog', function(req, res, next) {
+	res.render('admin/fetcherlog', {
+		title: 'Admin Space - Twitter Fetcher Log',
+		email: req.user.email
+	});
+});
+
 module.exports = router;

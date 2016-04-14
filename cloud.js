@@ -11,7 +11,7 @@ var async = require('async');
 var google = require('googleapis');
 
 var WORKER_INSTANCE_GROUP = "worker-nodes";
-var WORKER_INSTANCE_TEMPLATE = "worker-template"
+var WORKER_INSTANCE_TEMPLATE = "worker-template";
 
 var Cloud = function (config, callback) {
     if (!(this instanceof Cloud)) {
@@ -189,7 +189,7 @@ Cloud.prototype._createWorkerTemplate = function(callback) {
     var params = {
         resource: workerTemplate
     };
-    this.compute.instanceTemplates.insert(params, function(err, res){
+    this.compute.instanceTemplates.insert(params, function(err, res) {
         log.debug("Cloud.initInstanceTemplates: ", err, res);
         callback(err, res);
     });

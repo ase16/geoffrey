@@ -6,7 +6,6 @@ const Log = require('winston');
 Log.level = config.get('log.level');
 
 const MongoClient = require('mongodb').MongoClient;
-const ObjectId = require('mongodb').ObjectID;
 
 let mongodb;
 
@@ -16,11 +15,11 @@ const mongodbUrl = function() {
         config.get('mongodb.host') +
         ':' + config.get('mongodb.port') +
         '/' + config.get('mongodb.dbname');
-}
+};
 
 // this is a pseudo-check to see if we have a connection
 // if the object is not undefined, we assume it has been initialized/set
-const isConnected = () => typeof mongodb !== "undefined"
+const isConnected = () => typeof mongodb !== "undefined";
 
 const db = {
 
@@ -30,7 +29,7 @@ const db = {
         // do we already have a connection?
         if (isConnected()) return;
 
-        const url = mongodbUrl()
+        const url = mongodbUrl();
 
         MongoClient.connect(url, function(err, database) {
             if (err) {
@@ -39,7 +38,7 @@ const db = {
             } else {
                 Log.info('DB: Connected correctly to mongodb server: %s', url);
                 mongodb = database;
-                callback()
+                callback();
             }
         })
 	},
@@ -87,8 +86,7 @@ const db = {
                 function(err) {
 
                     if (err) {
-                        callback(err);
-                        return;
+                        return callback(err);
                     }
                     else {
                         mongodb.collection('terms').remove(
@@ -130,7 +128,7 @@ const db = {
                 // on index created callback
                 var indexCreated = function (err, indexName) {
                     if (!err) {
-                        Log.info('Index created: %s', indexName)
+                        Log.info('Index created: %s', indexName);
                     } else {
                         Log.error('Could not create index: %s', err);
                     }
@@ -159,7 +157,7 @@ const db = {
         if (isConnected()) {
             mongodb.collection('tweets').count(callback);
         } else {
-            callback("Not connected", 0)
+            callback("Not connected", 0);
         }
     },
 
@@ -174,10 +172,7 @@ const db = {
         } else {
             callback("Not connected", null);
         }
-
     }
-
-
 };
 
 module.exports = db;

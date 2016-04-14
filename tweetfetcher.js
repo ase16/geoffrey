@@ -1,9 +1,11 @@
+'use strict'
+
 const config = require('config');
 
 const Log = require('winston');
 Log.level = config.get('log.level');
 
-const db = require('./dbModule.js');
+let db;
 
 // Twitter API module
 // https://github.com/ttezel/twit
@@ -48,10 +50,8 @@ function getKeywords(callback) {
         keywords = keywords.filter(function(k){return k.length>1});
         keywords = keywords.map(function(k){return k.toLowerCase()});
         callback(keywords);
-
     });
-
-};
+}
 
 // processes incoming tweet. The tweet is inserted without
 // additional processing into the tweets collection.
@@ -66,7 +66,7 @@ function onNewTweet(tweet) {
             Log.debug('Inserted tweet into the database.');
         }
     });
-};
+}
 
 // set up twitter stream and subscribe to keywords
 // @param onNewTweet function to call when new tweet is received
@@ -106,25 +106,12 @@ function subscribeToTweets(callback) {
 
         callback(stream);
     });
-};
+}
 
 // prints some statistics about the tweets in the DB and the received tweets.
 function logStats(db) {
-    db.countTweets(function(err, count) {
-        if (!err) {
-            var now = new Date().getTime();
-            var newTweets = count-stats['numberOfTweets'];
-            var timeSpan = now-stats['timestamp'];
-            var tweetspersec = (newTweets/timeSpan*1000).toFixed(1);
-            if (isNaN(tweetspersec)) { tweetspersec=0 };
-            stats = {
-                'timestamp': now,
-                'numberOfTweets': count
-            };
-            Log.info('%d tweets in database, currently fetching %s tweets/second.', count, tweetspersec);
-        }
-    });
-};
+    tweetfetcher.getStats((data) => Log.info(data))
+}
 
 // sets up the tweets collection and logging stats
 function setupTweetsCollection() {
@@ -139,18 +126,44 @@ function setupTweetsCollection() {
         });
         setInterval(logStats, 10*1000, db);
     });
-};
-
+}
 
 var twitterCredentials = config.get('twitter');
 var twitter = new twit(twitterCredentials);
 var twitterStream;
 
-db.connect(function() {
-    setupTweetsCollection();
-    subscribeToTweets(function(stream) {
-        twitterStream = stream;
-    });
-});
+const tweetfetcher = {
+
+    init: function(dbModule, callback) {
+
+        db = dbModule;
+
+        setupTweetsCollection();
+        subscribeToTweets(function(stream) {
+            twitterStream = stream;
+            callback()
+            console.log("tweetfetcher initialized")
+        });
 
 
+    },
+
+    getStats : function(callback) {
+        db.countTweets(function(err, count) {
+            if (!err) {
+                var now = new Date().getTime();
+                var newTweets = count-stats['numberOfTweets'];
+                var timeSpan = now-stats['timestamp'];
+                var tweetspersec = (newTweets/timeSpan*1000).toFixed(1);
+                if (isNaN(tweetspersec)) { tweetspersec=0 }
+                stats = {
+                    'timestamp': now,
+                    'numberOfTweets': count
+                };
+                callback(count + ' tweets in database, currently fetching ' + tweetspersec + ' tweets/second.');
+            }
+        });
+    }
+}
+
+module.exports = tweetfetcher;
