@@ -15,7 +15,7 @@
 	var displayTermSpanHTML = '<span class="displayTerm"></span>';
 	var displayTermInputHTML = '<input name="term" type="hidden" />';
 	var displayTermDeleteButtonHTML = '<button class="mdl-button mdl-button--icon termDeleteButton" name="delete"><i class="material-icons">clear</i></button>';
-	var displayTermDisabledDeleteButtonHTML = '<button class="displayTermDelete" name="delete" disable="disable">Delete</button>';
+	var displayTermDisabledDeleteButtonHTML = '<button class="mdl-button mdl-button--icon termDeleteButton" name="delete" disable="disable"><i class="material-icons">clear</i></button>';
 
 	// ToDo: Use this html building blocks to enable editing of terms
 	// var displayTermEditButtonHTML = '<button class="displayTermEdit" name="edit">Edit</button>';

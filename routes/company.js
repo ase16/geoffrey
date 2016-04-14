@@ -91,3 +91,5 @@ router.post('/viz/fetch-tweets', function(req, res, next) {
 	var term = req.body.term;
 	viz.fetchTweets(term, (err, sentiments) => res.json(sentiments));
 });
+
+module.exports = router;
