@@ -16,19 +16,20 @@
     "async": "^1.5.2",
     "body-parser": "^1.15.0",
     "config": "^1.19.0",
+    "connect-mongo": "^1.1.0",
     "dotenv": "^2.0.0",
     "express": "^4.13.4",
     "express-stormpath": "^3.1.2",
+    "googleapis": "^3.1.0",
     "jade": "^1.11.0",
     "moment": "^2.12.0",
     "moment-timezone": "^0.5.3",
     "mongodb": "^2.1.14",
-    "connect-mongo": "^1.1.0",
     "morgan": "^1.7.0",
     "sentiment": "^1.0.6",
+    "socket.io": "^1.4.5",
     "twit": "^2.2.3",
-    "winston": "^2.2.0",
-    "googleapis": "^3.1.0",
+    "winston": "^2.2.0"
   },
   "devDependencies": {
     "errorhandler": "^1.4.3"
