@@ -18,6 +18,7 @@ html
 						if user
 							a.mdl-navigation__link(href="/company/main") Home
 							a.mdl-navigation__link(href="/company/term-management") Term-Management
+							a.mdl-navigation__link(href="/company/viz") Sentiment-Analysis
 							form#logout(method='post' action='/logout')
 								a.mdl-navigation__link(href='#', onclick='logout()') Logout
 			.mdl-layout__drawer
@@ -26,6 +27,7 @@ html
 					if user
 						a.mdl-navigation__link(href="/company/main") Home
 						a.mdl-navigation__link(href="/company/term-management") Term-Management
+						a.mdl-navigation__link(href="/company/viz") Sentiment-Analysis
 						form#logout(method='post' action='/logout')
 							a.mdl-navigation__link(href='#', onclick='logout()') Logout
 			main.mdl-layout__content

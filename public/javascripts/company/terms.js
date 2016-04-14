@@ -89,19 +89,20 @@
 
 	function createTerm(event) {
 		event.preventDefault();
-		var formData = $(this).serializeObject();
+		var formData = $(this).serializeObject();	// Get newly submitted term
+		$('#newTerm').val('');						// Manually clear input field
 
-		// Optimistic UI
-		$('ul.terms').append(
-			$(termsListItemHTML).append(
-				$(displayTermFormHTML).append(
-					$(displayTermSpanHTML).text(formData.term + ' (Optimistic UI)'),
-					$(displayTermInputHTML).val(formData.term),
-					$(displayTermDisabledDeleteButtonHTML)
-				)
+		// Prepare new term to be added to the terms-list
+		var $termsListItem = $(termsListItemHTML).append(
+			$(displayTermFormHTML).append(
+				$(displayTermSpanHTML).addClass('newTermOptimmisticUI').text(formData.term),
+				$(displayTermInputHTML).val(formData.term),
+				$(displayTermDisabledDeleteButtonHTML)
 			)
 		);
-		$('form.displayTerm').on('submit', deleteTerm);
+
+		// Optimistic UI
+		$('ul.terms').append($termsListItem);
 
 		var req = {
 			url: '/company/terms',
@@ -112,6 +113,7 @@
 			success: function( res ) {
 				console.log('The response from the server is = ', res);
 				if ( res.hasOwnProperty('err') ) {
+					$termsListItem.remove();		// In case the server responds with an error, revert Optimistic UI
 				}
 				else if( res.hasOwnProperty('terms') ) {
 					drawTerms(res.terms);

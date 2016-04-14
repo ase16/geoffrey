@@ -1,12 +1,3 @@
-body {
-	// padding: 50px;
-	// font: 14px "Lucida Grande", Helvetica, Arial, sans-serif;
-}
-
-a {
-	// color: #00B7FF;
-}
-
 .customContainer {
 	margin: auto;
 	width: 80%
@@ -54,6 +45,23 @@ circle {
 
 .termDeleteButton {
 	font-size: 12px;
+}
+
+span.displayTerm {
+	padding: 5px;
+}
+
+.newTermOptimmisticUI {
+	border-radius: 4px;
+	animation-name: optimisticUITerm;
+	animation-duration: 1s;
+	animation-iteration-count: infinite;
+}
+
+/* The animation code is inspired by --> http://codepen.io/metagrapher/pen/tgcLl */
+@keyframes optimisticUITerm {
+	0%   { background-color: transparent; }
+	50%  { background-color: rgba(255, 204, 0, 0.5); }
 }
 
 #viz-wrapper { margin-top: 20px; }
