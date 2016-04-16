@@ -6,6 +6,7 @@ var path = require('path');												// This module contains utilities for han
 
 // Third-party modules
 require('dotenv').config({path: '.env.stormpath'});						// Automatically reads in .env files and sets environment variables --> https://github.com/motdotla/dotenv#usage
+require('dotenv').config({path: '.env.gce'});							// Automatically reads in .env files and sets environment variables --> https://github.com/motdotla/dotenv#usage
 var express = require('express');
 var expressStormpath = require('express-stormpath');					// Our "Tenant" for Stormpath is "majestic-panther" --> https://api.stormpath.com/login
 

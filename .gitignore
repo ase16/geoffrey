@@ -1,4 +1,4 @@
-/.env.stormpath
+/.env*
 /data
 /drafts
 
