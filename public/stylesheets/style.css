@@ -48,18 +48,29 @@ circle {
 }
 
 span.displayTerm {
-	padding: 5px;
+	padding: 2px 5px;
 }
 
-.newTermOptimmisticUI {
+.termOptimisticUI {
 	border-radius: 4px;
-	animation-name: optimisticUITerm;
+	animation-name: optimisticUI;
+	animation-duration: 1s;
+	animation-iteration-count: infinite;
+}
+
+span.displayVM, span.displayVMState {
+	padding: 2px 5px;
+}
+
+.vmOptimisticUI {
+	border-radius: 4px;
+	animation-name: optimisticUI;
 	animation-duration: 1s;
 	animation-iteration-count: infinite;
 }
 
 /* The animation code is inspired by --> http://codepen.io/metagrapher/pen/tgcLl */
-@keyframes optimisticUITerm {
+@keyframes optimisticUI {
 	0%   { background-color: transparent; }
 	50%  { background-color: rgba(255, 204, 0, 0.5); }
 }

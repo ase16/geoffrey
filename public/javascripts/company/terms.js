@@ -95,7 +95,7 @@
 		// Prepare new term to be added to the terms-list
 		var $termsListItem = $(termsListItemHTML).append(
 			$(displayTermFormHTML).append(
-				$(displayTermSpanHTML).addClass('newTermOptimmisticUI').text(formData.term),
+				$(displayTermSpanHTML).addClass('termOptimisticUI').text(formData.term),
 				$(displayTermInputHTML).val(formData.term),
 				$(displayTermDisabledDeleteButtonHTML)
 			)

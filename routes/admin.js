@@ -45,6 +45,17 @@ router.route('/vms')
 			}
 		});
 	})
+
+	.post(function(req, res, next) {
+		vms.resize(req, function(err, data) {
+			if (!err) {
+				res.json( { vms: data } );
+			}
+			else {
+				res.json( { err: err } );
+			}
+		});
+	})
 ;
 
 module.exports = router;

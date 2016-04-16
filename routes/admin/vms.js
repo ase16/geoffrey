@@ -25,6 +25,28 @@ var vms = {
 				return callback(err);
 			}
 		});
+	},
+	
+	resize: function(req, callback) {
+		var newSizeOfInstanceGroup = req.body.newSizeOfInstanceGroup;
+		var cgeConfig = config.get("gcloud");
+		var cloud = require('./../../cloud.js')(cgeConfig, function(err) {
+			cloud.initInstanceTemplates(function() {
+				console.log("Instance templates initialized.");
+				cloud.initInstanceGroups(function() {
+					console.log("Instance groups initialized.");
+
+					cloud.resizeWorkerGroup(newSizeOfInstanceGroup, function(err, res) {
+						if (!err) {
+							return callback(null, res);
+						}
+						else {
+							return callback(err);
+						}
+					});
+				});
+			});
+		});
 	}
 };
 
