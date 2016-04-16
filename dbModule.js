@@ -161,6 +161,33 @@ const db = {
         }
     },
 
+    // analyzed tweets are "completed"
+    countTweetsAnalyzed: function(callback) {
+        if (isConnected()) {
+            mongodb.collection('tweets').count({analyzed: true}, callback);
+        } else {
+            callback("Not connected", 0);
+        }
+    },
+
+    // tweets in progress are currently being analyzed.
+    countTweetsInProgress: function(callback) {
+        if (isConnected()) {
+            mongodb.collection('tweets').count({analyzed: false, inProgress: true}, callback);
+        } else {
+            callback("Not connected.", 0);
+        }
+    },
+
+    // pending tweets are tweets that are not analyzed yet and not currently in progress
+    countTweetsPending: function(callback) {
+        if (isConnected()) {
+            mongodb.collection('tweets').count({analyzed: false, inProgress: false}, callback);
+        } else {
+            callback("Not connected.", 0);
+        }
+    },
+
     // Add a new tweet to the tweets collection
     // @param tweet JSON as received from the Twitter API
     // @param callback fn(err, res)
@@ -169,9 +196,53 @@ const db = {
             tweet['analyzed'] = false;      // set to true if this tweet was analyzed successfully.
             tweet['inProgress'] = false;    // set to true if this tweet is being processed right now.
             mongodb.collection('tweets').insertOne(tweet, callback);
+            /**
+             * analyzed / inProgress booleans lead to 4 possible states
+             *  A   iP
+             * --------
+             *  0 | 0   -> New tweet, ready to be analyzed
+             *  0 | 1   -> Tweet is currently analyzed by a worker. If too long iP, we could reset it to (0,0). Could happen if worker dies
+             *  1 | 0   -> Tweet was analyzed
+             *  1 | 1   -> This case should not happen (inProgress flag not updated).
+             * --------
+             */
         } else {
             callback("Not connected", null);
         }
+    },
+
+    // Uses findOneAndUpdate to find a tweet that is not processed yet and marks it as inProgress.
+    // @param callback fn(err, dbresult)
+    findSingleNewTweet: function(callback) {
+        if (isConnected()) {
+            mongodb.collection('tweets').findOneAndUpdate(
+                {inProgress: false, analyzed: false},
+                {$set: {inProgress: true}},
+                {projection: {
+                    id_str: 1,
+                    text: 1,
+                    retweet_count: 1,
+                    favorite_count: 1}
+                },
+                callback);
+        } else {
+            callback("Not connected.", 0);
+        }
+    },
+
+    // @param dbId: the database _id field, can be accessed by res.value['_id']
+    // @param words: an array with the cleaned words of the tweet
+    // @param sentiment: the sentiment analysis result
+    updateSingleTweetWithAnalysis: function(dbId, words, sentiment, callback) {
+        mongodb.collection('tweets').updateOne(
+            {_id: dbId},
+            {$set: {
+                inProgress: false,
+                analyzed: true,
+                words: words,
+                sentiment: sentiment
+                }
+            }, callback);
     }
 };
 

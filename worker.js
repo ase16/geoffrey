@@ -1,122 +1,149 @@
-/**
- * Created by albrecht on 16.03.16.
- */
-
+'use strict';
 
 var events = require('events');
 var eventEmitter = new events.EventEmitter();
 
-var config = require('config');
+const config = require('config');
 
-var Log = require('winston');
+const Log = require('winston');
 Log.level = config.get('log.level');
 
-var MongoClient = require('mongodb').MongoClient;
+const db = require('./dbModule.js');
 
-var mongodb;
+var stats = {};
 
-var stats = {timestamp: 0, numberoftweets: 0};
+/**************/
+// SENTIMENT -> TODO: make additional module!
+// https://github.com/thisandagain/sentiment
+var sentiment = require('sentiment');
 
-// returns the mongodb connection string
-var mongodbUrl = function() {
-    return 'mongodb://' +
-        config.get('mongodb.host') +
-        ':' + config.get('mongodb.port') +
-        '/' + config.get('mongodb.dbname');
-};
-
-// connects to the mongodb
-var dbConnect = function(url, connected) {
-    MongoClient.connect(url, function(err, database) {
-        if (err) {
-            Log.error('DB: Could not connect to mongodb server: %s', url, err);
-            process.exit(1);
-        } else {
-            Log.info('DB: Connected correctly to mongodb server: %s', url);
-            mongodb = database;
-            connected();
-        }
-    });
-};
-
-// closes the mongodb connection
-var dbClose = function(db) {
-    db.close();
-    Log.info('DB: closed connection.')
-};
-
-function logStats(db) {
-    db.collection('tweets').count({analyzed: true}, function(err, count) {
-        if (!err) {
-            var now = new Date().getTime();
-            tweetspersec = ((count-stats['numberoftweets'])/(now-stats['timestamp'])*1000).toFixed(1);
-            stats = {'timestamp': now, 'numberoftweets': count};
-            Log.info('%d tweets analyzed, analyzing %s tweets/second.', count, tweetspersec);
-        }
-    });
+function sentimentAnalysis(tweet) {
+    var result = sentiment(tweet['text']);
+    // Log.debug(result);
+    return result;
 }
 
-function doSomeWork(text) {
-    var words = text.split(' ').sort();
+// this code is from the other repository.
+/*
+function performAnalysis(tweetSet) {
+    //set a results variable
+    var results = 0;
+    // iterate through the tweets, pulling the text, retweet count, and favorite count
+    for(var i = 0; i < tweetSet.length; i++) {
+        var tweet = tweetSet[i]['text'];
+        var retweets = tweetSet[i]['retweet_count'];
+        var favorites = tweetSet[i]['favorite_count'];
+        // remove the hastag from the tweet text
+        tweet = tweet.replace('#', '');
+        // perform sentiment on the text
+        var score = sentiment(tweet)['score'];
+        // calculate score
+        results += score;
+        if(score > 0){
+            if(retweets > 0) {
+                results += (Math.log(retweets)/Math.log(2));
+            }
+            if(favorites > 0) {
+                results += (Math.log(favorites)/Math.log(2));
+            }
+        }
+        else if(score < 0){
+            if(retweets > 0) {
+                results -= (Math.log(retweets)/Math.log(2));
+            }
+            if(favorites > 0) {
+                results -= (Math.log(favorites)/Math.log(2));
+            }
+        }
+        else {
+            results += 0;
+        }
+    }
+    // return score
+    results = results / tweetSet.length;
+    return results;
+}
+*/
+
+/**************/
+
+function extractWords(text) {
+    var re = /\w+/gi;
+    var words = text.match(re)
+    /*
     words.forEach(function(w) {
         Log.info('\t%s', w);
     });
+    */
     return words;
 }
 
+
+
 function analyzeTweet() {
-    mongodb.collection('tweets').findOneAndUpdate(
-        {inProgress: false, analyzed: false},
-        {$set: {inProgress: true}},
-        {projection: {id_str: 1, text: 1}},
-        function(err, res) {
-            if (!err) {
-                if(!res.value) {
-                    // got no tweet to analyze - schedule next analysis in a few seconds.
-                    Log.info('No more tweets. Schedule nextTweet in a few seconds');
-                    setTimeout(nextTweet, 5*1000);
-                    // at the moment we exit.
-                    process.exit(1);
-                } else {
-                    Log.info('Got new tweet: %s\t[%s]', res.value['id_str'], res.value['text']);
-                    var words = doSomeWork(res.value['text']);
-
-                    mongodb.collection('tweets').updateOne(
-                        {_id: res.value['_id']},
-                        {$set: {inProgress: false, analyzed: true, words: words}},
-                        function(err, res){
-                            if (!err) {
-                                Log.info('Tweet analyzed.');
-                            } else {
-                                Log.error('Could not update tweet', err);
-                            }
-                            nextTweet();
-                        });
-                }
-
-
+    db.findSingleNewTweet(function(err, res) {
+        if (err) {
+            Log.warn(err);
+            nextTweet();
+        } else {
+            if(!res.value) {
+                // got no tweet to analyze - schedule next analysis in a few seconds.
+                // we back off a bit in order to not stress the database.
+                Log.info('No more tweets. Schedule nextTweet in a few seconds');
+                setTimeout(nextTweet, 5*1000);
+                // TODO: maybe exit and shutdown if no work or too little work for too long
             } else {
-                Log.warn(err);
-                nextTweet();
+                Log.debug('Got new tweet: %s\t[%s]', res.value['id_str'], res.value['text']);
+                var tweet = res.value;
+                var words = extractWords(tweet['text']); // TODO: we can get the words from the sentiment analysis...
+                var sentimentResult = sentimentAnalysis(tweet);
+                
+                db.updateSingleTweetWithAnalysis(res.value['_id'], words, sentimentResult, function(err, res) {
+                    if (err) {
+                        Log.error('Could not update tweet', err);
+                    } else {
+                        Log.debug('Tweet analyzed.');
+                    }
+                    nextTweet();
+                });
             }
         }
-    );
+    });
 }
 
+// Indicate that we are ready to analyze the next tweet
 function nextTweet() {
+    stats['numberOfTweetsAnalyzed'] += 1;
     eventEmitter.emit('nextTweet');
 }
 
-function onDbConnected() {
-    // log number of tweets in the collection
-    mongodb.collection('tweets').count({analyzed: true}, function(err, count) {
-        stats = {timestamp: new Date().getTime(), numberoftweets: count};
-    });
-    setInterval(logStats, 10*1000, mongodb);
+function logStats() {
+    var now = new Date().getTime();
+    var newTweets = stats['numberOfTweetsAnalyzed']-stats['numberOfTweetsAnalyzedLog'];
+    var timeSpan = now-stats['timestamp'];
+    var tweetspersec = (newTweets/timeSpan*1000).toFixed(1);
+    if (isNaN(tweetspersec)) { tweetspersec=0 }
+    stats['timestamp'] = now;
+    stats['numberOfTweetsAnalyzedLog'] = stats['numberOfTweetsAnalyzed'];
+    Log.info('Processed %d new tweets in %d s, %s tweets/s, total tweets processed is %d',
+        newTweets, (timeSpan/1000).toFixed(1), tweetspersec, stats['numberOfTweetsAnalyzed']);
+}
+
+function setupStats() {
+    // numberOfTweetsAnalyzed: this is the total and incremented with each tweet that is analyzed
+    // numberOfTweetsAnalyzedLog: this is set when the stats are printed (i.e. total of previous interval).
+    stats = {
+        timestamp: new Date().getTime(),
+        numberOfTweetsAnalyzed: 0,
+        numberOfTweetsAnalyzedLog: 0
+    };
+    setInterval(logStats, 10*1000);
+}
+
+db.connect(function(err, res) {
+    Log.debug("Connected to database.");
+    setupStats();
 
     eventEmitter.on('nextTweet', analyzeTweet);
     nextTweet();
-}
-
-var dbUrl = mongodbUrl();
-dbConnect(dbUrl, onDbConnected);
+});
