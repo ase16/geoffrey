@@ -15,21 +15,39 @@ html
 					span.mdl-layout-title Geoffrey
 					.mdl-layout-spacer
 					nav.mdl-navigation
-						if user
+						if admin
+							a.mdl-navigation__link(href="/admin/main") Home
+							a.mdl-navigation__link(href="/admin/vm-management") VM-Management
+							a.mdl-navigation__link(href="/admin/fetcherlog") Fetcher Log
+							form#logout(method='post' action='/logout')
+								a.mdl-navigation__link(href='#', onclick='logout()') Logout
+						else if user
 							a.mdl-navigation__link(href="/company/main") Home
 							a.mdl-navigation__link(href="/company/term-management") Term-Management
 							a.mdl-navigation__link(href="/company/viz") Sentiment-Analysis
 							form#logout(method='post' action='/logout')
 								a.mdl-navigation__link(href='#', onclick='logout()') Logout
+						else
+							a.mdl-navigation__link(href="/") Home
+							a.mdl-navigation__link(href="/register") Create account
 			.mdl-layout__drawer
 				span.mdl-layout-title Geoffrey
 				nav.mdl-navigation
-					if user
+					if admin
+						a.mdl-navigation__link(href="/admin/main") Home
+						a.mdl-navigation__link(href="/admin/vm-management") VM-Management
+						a.mdl-navigation__link(href="/admin/fetcherlog") Fetcher Log
+						form#logout(method='post' action='/logout')
+							a.mdl-navigation__link(href='#', onclick='logout()') Logout
+					else if user
 						a.mdl-navigation__link(href="/company/main") Home
 						a.mdl-navigation__link(href="/company/term-management") Term-Management
 						a.mdl-navigation__link(href="/company/viz") Sentiment-Analysis
 						form#logout(method='post' action='/logout')
 							a.mdl-navigation__link(href='#', onclick='logout()') Logout
+					else
+						a.mdl-navigation__link(href="/") Home
+						a.mdl-navigation__link(href="/register") Create account
 			main.mdl-layout__content
 				block content
 

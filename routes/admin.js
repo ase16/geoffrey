@@ -15,21 +15,24 @@ router.get('/main', function(req, res, next) {
 	res.render('admin/main', {
 		title: 'Admin Space - Main Screen',
 		email: req.user.email,
-		user: req.user
+		user: req.user,
+		admin: true
 	});
 });
 
 router.get('/fetcherlog', function(req, res, next) {
 	res.render('admin/fetcherlog', {
 		title: 'Admin Space - Twitter Fetcher Log',
-		email: req.user.email
+		email: req.user.email,
+		admin: true
 	});
 });
 
 router.get('/vm-management', function(req, res, next) {
 	res.render('admin/vmManagement', {
 		title: 'Admin Space - VM Management Screen',
-		email: req.user.email
+		email: req.user.email,
+		admin: true
 	});
 });
 
