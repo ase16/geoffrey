@@ -5,5 +5,5 @@ socket.on('connect', function(socket){
 });
 
 socket.on('fetcher-log', function(msg){
-  $('#log-wrapper').append('<span>' + msg + '</span>').append("<br>");
+  $('#log-wrapper').append('<li class="mdl-list__item"><span class="mdl-list__item-primary-content">' + msg + '</span></li>');
 });
