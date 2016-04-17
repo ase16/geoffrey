@@ -12,7 +12,7 @@ var vms = {
 		var cgeConfig = config.get("gcloud");
 		var cloud = require('./../../cloud.js')(cgeConfig, function(err) {
 			if (!err) {
-				cloud.listInstances(function(err, res) {
+				cloud.listWorkerInstances(function(err, res) {
 					if (!err) {
 						return callback(null, res.items);
 					}
