@@ -41,6 +41,7 @@ circle {
 	background-color: #ccc;
 	padding: 10px;
 	position: absolute;
+	z-index: 999;
 }
 
 .termDeleteButton {
