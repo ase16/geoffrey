@@ -11,12 +11,63 @@
   padding-right: 0;
 }
 
-.login-card {
+.card-header {
 	position: relative;
 	margin:auto;
 	display: block;
 	width: 100%;
 	color: #00B7FF;
+}
+
+.login-card > .mdl-card__title {
+	color: white;
+  height: 300px;
+  background: url('../images/login.jpg') center / cover;
+}
+
+.fetcherlog > .mdl-card__title {
+	color: white;
+	height: 300px;
+	background: url('../images/fetcherlog.jpg') center / cover;
+}
+
+.vmmanagement > .mdl-card__title {
+	color: white;
+	height: 300px;
+	background: url('../images/vmmanagement.jpg') center / cover;
+}
+
+.viz > .mdl-card__title {
+	color: white;
+	height: 300px;
+	background: url('../images/viz.jpg') top / cover;
+}
+
+.termmanagement > .mdl-card__title {
+	height: 300px;
+	background: url('../images/termmanagement.jpeg') center / cover;
+}
+
+.adminmain > .mdl-card__title {
+	color: white;
+	height: 300px;
+	background: url('../images/adminmain.jpg') center / cover;
+}
+
+.companymain > .mdl-card__title {
+	color: white;
+	height: 300px;
+	background: url('../images/companymain.jpg') center / cover;
+}
+
+.mdl-badge[data-badge]:after {
+	top: -15px;
+	right: -33px;
+	font-family: "Roboto", "Helvetica", "Arial", sans-serif;
+	font-weight: 600;
+	font-size: 12px;
+	width: 33px;
+	height: 33px;
 }
 
 .error {
