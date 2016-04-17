@@ -20,13 +20,13 @@ html
 							a.mdl-navigation__link(href="/admin/vm-management") VM-Management
 							a.mdl-navigation__link(href="/admin/fetcherlog") Fetcher Log
 							form#logout(method='post' action='/logout')
-								a.mdl-navigation__link(href='#', onclick='logout()') Logout
+								a.mdl-navigation__link(href='#', onclick='logout()') Logout (#{email})
 						else if user
 							a.mdl-navigation__link(href="/company/main") Home
 							a.mdl-navigation__link(href="/company/term-management") Term-Management
 							a.mdl-navigation__link(href="/company/viz") Sentiment-Analysis
 							form#logout(method='post' action='/logout')
-								a.mdl-navigation__link(href='#', onclick='logout()') Logout
+								a.mdl-navigation__link(href='#', onclick='logout()') Logout (#{email})
 						else
 							a.mdl-navigation__link(href="/") Home
 							a.mdl-navigation__link(href="/register") Create account
@@ -38,13 +38,13 @@ html
 						a.mdl-navigation__link(href="/admin/vm-management") VM-Management
 						a.mdl-navigation__link(href="/admin/fetcherlog") Fetcher Log
 						form#logout(method='post' action='/logout')
-							a.mdl-navigation__link(href='#', onclick='logout()') Logout
+							a.mdl-navigation__link(href='#', onclick='logout()') Logout (#{email})
 					else if user
 						a.mdl-navigation__link(href="/company/main") Home
 						a.mdl-navigation__link(href="/company/term-management") Term-Management
 						a.mdl-navigation__link(href="/company/viz") Sentiment-Analysis
 						form#logout(method='post' action='/logout')
-							a.mdl-navigation__link(href='#', onclick='logout()') Logout
+							a.mdl-navigation__link(href='#', onclick='logout()') Logout (#{email})
 					else
 						a.mdl-navigation__link(href="/") Home
 						a.mdl-navigation__link(href="/register") Create account
