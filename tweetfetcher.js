@@ -160,7 +160,38 @@ const tweetfetcher = {
                     'timestamp': now,
                     'numberOfTweets': count
                 };
-                callback(count + ' tweets in database, currently fetching ' + tweetspersec + ' tweets/second.');
+
+                // TODO: move this somewhere else - this is just for the demonstration!
+                // TODO: make a aggregation query that fetches all info in 1 query ("group by")
+
+                /**
+                 Query (make sure that the indexes are used! otherwise the query is very slow and expensive)
+                 db.tweets.aggregate(
+                 {
+                     $group: {
+                         _id: {
+                            inProgress: "$inProgress",
+                            analyzed : "$analyzed"
+                            },
+                         count: { $sum: 1 }
+                     }
+                 }
+                 )
+                 */
+                db.countTweetsAnalyzed(function(err, countAnalyzed) {
+                   db.countTweetsInProgress(function(err, countInProgress) {
+                       db.countTweetsPending(function(err, countPending) {
+                           callback(
+                               count + ' tweets in database ('
+                               + countAnalyzed + ' analyzed, '
+                               + countInProgress + ' in progress, '
+                               + countPending + ' pending), currently fetching '
+                               + tweetspersec + ' tweets/second.');
+                       })
+                   })
+                });
+
+
             }
         });
     }

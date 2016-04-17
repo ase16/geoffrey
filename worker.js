@@ -125,7 +125,7 @@ function logStats() {
     if (isNaN(tweetspersec)) { tweetspersec=0 }
     stats['timestamp'] = now;
     stats['numberOfTweetsAnalyzedLog'] = stats['numberOfTweetsAnalyzed'];
-    Log.info('Processed %d new tweets in %d s, %s tweets/s, total tweets processed is %d',
+    Log.info('Processed %d tweets in %d s, %s tweets/s, total tweets processed is %d',
         newTweets, (timeSpan/1000).toFixed(1), tweetspersec, stats['numberOfTweetsAnalyzed']);
 }
 
