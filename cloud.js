@@ -107,7 +107,11 @@ Cloud.prototype.initInstanceTemplates = function(callback) {
     this.compute.instanceTemplates.list({
         filter: "name eq " + WORKER_INSTANCE_TEMPLATE
     }, function(err, res) {
-        if(typeof res.items != 'undefined' && res.items instanceof Array && res.items.length != 0) {
+        if (err) {
+            return callback(err, res);
+        }
+
+        if(typeof res.items != 'undefined' && res.items instanceof Array && res.items.length > 0) {
             log.info("Instance template '%s' does already exist.", WORKER_INSTANCE_TEMPLATE);
             callback(null);
         } else {
@@ -204,7 +208,11 @@ Cloud.prototype.initInstanceGroups = function(callback) {
         zone: self.config.zone,
         filter: "name eq " + WORKER_INSTANCE_GROUP
     }, function(err, res) {
-        if(typeof res.items != 'undefined' && res.items instanceof Array && res.items.length != 0) {
+        if (err) {
+            return callback(err, res);
+        }
+
+        if(typeof res.items != 'undefined' && res.items instanceof Array && res.items.length > 0) {
             log.info("Instance group '%s' does already exist.", WORKER_INSTANCE_GROUP);
             callback(null);
         } else {
