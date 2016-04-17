@@ -48,8 +48,10 @@
 		for(var i = 0; i < vms.length; i++) {
 			var vm = vms[i];
 			var vmOptimisticUI = '';
-			console.log('VM status is = ', vm.status);
-			if (vm.status !== 'RUNNING') {
+			var vmInstanceStatus = (vm.hasOwnProperty('instanceStatus') ? vm.instanceStatus : vm.currentAction);
+			console.log('VM status is = ', vmInstanceStatus);
+			// if (vm.status !== 'RUNNING') {
+			if (vmInstanceStatus !== 'RUNNING') {
 				isResizing = true;
 				console.log('Still resizing = ', isResizing);
 				vmOptimisticUI = 'vmOptimisticUI';
@@ -58,7 +60,8 @@
 				$(vmsListItemHTML).append(
 					$(displayVMFormHTML).append(
 						$(displayVMSpanHTML).text(vm.name),
-						$(displayVMStateSpanHTML).addClass(vmOptimisticUI).text("[" + vm.status + "]")
+						// $(displayVMStateSpanHTML).addClass(vmOptimisticUI).text("[" + vm.status + "]")
+						$(displayVMStateSpanHTML).addClass(vmOptimisticUI).text("[" + vmInstanceStatus + "]")
 					)
 				)
 			);
@@ -106,8 +109,8 @@
 		var currentSize = $('ul.vms li').length;
 		var newSize = formData.newSizeOfInstanceGroup;
 
-		if (newSize < 0 || newSize > 8) {
-			alert("Choose an integer between 0 and 8");
+		if (newSize < 0 || newSize > 6) {
+			alert("Choose an integer between 0 and 6");
 			return;
 		}
 
