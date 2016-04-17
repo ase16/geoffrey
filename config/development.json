@@ -9,14 +9,16 @@
     "mongodb": {
         "host": "localhost",
         "port": 27017,
-        "dbname": "twitterdata"
+        "dbname": "twitterdata",
+        "user": "",
+        "password": ""
     },
 
     "gcloud": {
         "projectId": "",
         "keyFilename": "",
         "zone": ""
-    },
+},
 
     "log": {
         "level": "info"

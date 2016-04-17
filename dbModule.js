@@ -11,8 +11,15 @@ let mongodb;
 
 // returns the mongodb connection string
 const mongodbUrl = function() {
-    return 'mongodb://' +
-        config.get('mongodb.host') +
+    var user = '';
+    if (config.get('mongodb.user').length > 0 && config.get('mongodb.password').length > 0) {
+        user = config.get('mongodb.user') + 
+         ':' + config.get('mongodb.password') + 
+         '@';
+    }
+    return 'mongodb://'
+            + user +
+              config.get('mongodb.host') +
         ':' + config.get('mongodb.port') +
         '/' + config.get('mongodb.dbname');
 };
@@ -220,9 +227,7 @@ const db = {
                 {$set: {inProgress: true}},
                 {projection: {
                     id_str: 1,
-                    text: 1,
-                    retweet_count: 1,
-                    favorite_count: 1}
+                    text: 1}
                 },
                 callback);
         } else {
