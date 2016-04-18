@@ -24,14 +24,19 @@ const waitForConnections = function() {
   io.sockets.on('connection', function(s) {
     console.log("socket connection established");
     openSockets.push(s)
-  })
 
-  //TODO remove socket from openSockets on disconnect
+    s.on('disconnect', function() {
+        console.log(s.id, 'Got disconnect!');
+
+        let i = openSockets.indexOf(socket);
+        openSockets.splice(i, 1);
+     });
+  })
 }
 
 const sendTweetFetcherLogs = function() {
-  openSockets.forEach( (s) => {
-    tweetfetcher.getStats( (statsStr) => {
+  tweetfetcher.getStats( (statsStr) => {
+    openSockets.forEach( (s) => {
       s.emit('fetcher-log', statsStr);
     })
   })
