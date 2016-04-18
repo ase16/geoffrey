@@ -140,3 +140,7 @@ span.displayVM, span.displayVMState {
 	border: 1px solid black;
 	margin-right: 5px;
 }
+
+.mdl-mini-footer {
+	padding: 0px 16px;
+}
