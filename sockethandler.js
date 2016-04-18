@@ -16,6 +16,11 @@ const sockethandler = {
       waitForConnections();
 
       console.log('socket.io is ready');
+
+      // send an update to the client every 3s
+      setInterval(sendTweetFetcherLogs, 3000)
+
+
       callback()
   }
 }
@@ -42,7 +47,5 @@ const sendTweetFetcherLogs = function() {
   })
 }
 
-// send an update to the client every 3s
-setInterval(sendTweetFetcherLogs, 3000)
 
 module.exports = sockethandler;
