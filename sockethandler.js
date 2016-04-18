@@ -33,7 +33,7 @@ const waitForConnections = function() {
     s.on('disconnect', function() {
         console.log(s.id, 'Got disconnect!');
 
-        let i = openSockets.indexOf(socket);
+        let i = openSockets.indexOf(s);
         openSockets.splice(i, 1);
      });
   })
