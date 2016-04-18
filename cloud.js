@@ -154,7 +154,7 @@ Cloud.prototype._createWorkerTemplate = function(callback) {
                     "autoDelete": true,
                     "deviceName": "worker",
                     "initializeParams": {
-                        "sourceImage": "https://www.googleapis.com/compute/v1/projects/debian-cloud/global/images/debian-8-jessie-v20160301",
+                        "sourceImage": "https://www.googleapis.com/compute/v1/projects/debian-cloud/global/images/debian-8-jessie-v20160329",
                         "diskType": "pd-ssd",
                         "diskSizeGb": "10"
                     }
