@@ -11,7 +11,9 @@ root folder.
 * Grab the `ASE16-************.json` file from our shared google docs folder and drop it into config folder.
 * Check if your `development.json` is properly set up (compare it to the one in our google docs folder).
 * Make sure you have mongo running on your machinge, e.g. with a statment like `mongod --dbpath="path/to/data/directory"`
-* That's it, run `node app` in your project run and enjoy.
+* **For local development you need to comment/uncomment the appropriate serviceUrl variable-lines in the beginning of public/javascripts/company/terms.js**
+* **Do not forget to run `node app` in the carlton project, to ensure that the term-management backend is up and running!!!**
+* Finally run `node app` in your geoffrey project.
 
 ## Distinction between admins and companies
 The first screen is the login screen, where you also have the possibility to register and use some
@@ -42,68 +44,3 @@ artificially added a string "(Optimistic UI)" after the term when you add it. Af
 the client got a response from server, the (Optimistic UI) disappears.
 
 ## Playing round with the terms API
-A company user can manage the terms for that the user would like to collect twitter data and later
-fire sentiment analysis on it.
-
-The terms are implemented in some kind of RESTful manner.
-Note they are currently only stored as custom-data on the corresponding stormpath
-user (Maybe we have to store them also or only in the MongoDB).
-
-Anyway, if you would like to use the terms API to list the terms, add a new term, alter a term or delete a term
-then you can currently **use the web-browser's console** to fire some ajax requests (I've set up jQuery
-on the front-end so that we can use that). Be ware that parameter and error handling is rather poor
-yet and will be improved in the near future.
-
-### Create a new term
-```javascript
-$.ajax({
-	url: '/company/terms',
-	type: 'post',
-	data: { 'term': 'BatmanVSSuperman' },
-	dataType: 'json',
-	cache: false,
-	success: function( res ) {
-		console.log('Response from server = ', res);
-	}
-});
-```
-
-### List the terms
-```javascript
-$.ajax({
-	url: '/company/terms',
-	type: 'get',
-	dataType: 'json',
-	cache: false,
-	success: function( res ) {
-		console.log('Response from server = ', res);
-	}
-});
-```
-
-### Update a term
-```javascript
-$.ajax({
-	url: '/company/terms/BatmanVSSuperman',
-	type: 'put',
-	data: { 'newTerm': 'IronMan' },
-	dataType: 'json',
-	cache: false,
-	success: function( res ) {
-		console.log('Response from server = ', res);
-	}
-});
-```
-
-### Delete a term
-```javascript
-$.ajax({
-	url: '/company/terms/IronMan',
-	type: 'delete',
-	dataType: 'json',
-	cache: false,
-	success: function( res ) {
-		console.log('Response from server = ', res);
-	}
-});
-```
