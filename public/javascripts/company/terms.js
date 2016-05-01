@@ -1,6 +1,10 @@
 (function() {
 	"use strict";
 
+	// For local development comment/uncomment the appropriate lines (And make sure you start both apps, geoffrey as well as carlton)
+	// var serviceUrl = "http://localhost:3001";
+	var serviceUrl = "http://104.196.103.90:3001";
+
 	// We first define our html building blocks that are used in our terms management screen
 	var termsHTML = '<div class="terms"></div>';
 
@@ -67,7 +71,7 @@
 
 	function readTerms() {
 		var req = {
-			url: '/company/terms',
+			url: serviceUrl + '/company/terms',
 			type: 'get',
 			dataType: 'json',
 			cache: false,
@@ -80,7 +84,9 @@
 				}
 			},
 			error: function( xhr, status, errorThrown ) {
-				console.log('ERROR', errorThrown);
+				console.log('AJAX ERROR: xhr = ', xhr);
+				console.log('AJAX ERROR: status = ', status);
+				console.log('AJAX ERROR: errorThrown = ', errorThrown);
 			}
 		};
 
@@ -105,7 +111,7 @@
 		$('ul.terms').append($termsListItem);
 
 		var req = {
-			url: '/company/terms',
+			url: serviceUrl + '/company/terms',
 			type: 'post',
 			data: formData,
 			dataType: 'json',
@@ -120,7 +126,9 @@
 				}
 			},
 			error: function( xhr, status, errorThrown ) {
-				console.log( "Error: " + errorThrown );
+				console.log('AJAX ERROR: xhr = ', xhr);
+				console.log('AJAX ERROR: status = ', status);
+				console.log('AJAX ERROR: errorThrown = ', errorThrown);
 			}
 		};
 
@@ -136,7 +144,7 @@
 		var $term = $(this).parent().detach();								// --> https://api.jquery.com/detach/
 
 		var req = {
-			url: '/company/terms/' + formData.term,
+			url: serviceUrl + '/company/terms/' + formData.term,
 			type: 'delete',
 			data: formData,
 			dataType: 'json',
@@ -162,7 +170,9 @@
 				else {
 					$('ul.terms').prepend($term);
 				}
-				console.log( "Error: " + errorThrown );
+				console.log('AJAX ERROR: xhr = ', xhr);
+				console.log('AJAX ERROR: status = ', status);
+				console.log('AJAX ERROR: errorThrown = ', errorThrown);
 			}
 		};
 
