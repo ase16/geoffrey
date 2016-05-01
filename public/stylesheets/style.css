@@ -78,10 +78,31 @@
 	font-size:18px;
 }
 
-path, line {
+#monitoring-wrapper .graph {
+	padding: 20px;
+	box-shadow: 0 0 3px #aaa;
+	display: inline-block;
+}
+
+#monitoring-wrapper .graph span {
+	color: black;
+	display: block;
+	margin-bottom: 20px;
+}
+
+line, path {
 	stroke-width: 1px;
 	stroke: black;
 	fill: none;
+}
+
+g.tick line {
+	stroke: #ccc;
+}
+
+path.line {
+	stroke: #4D90FE;
+	stroke-width: 2px;
 }
 
 circle {
