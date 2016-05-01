@@ -51,6 +51,8 @@ app.on('stormpath.ready', function() {
 	server.listen(3000, function () {
 		console.log('Geoffrey is listening on port 3000');
 		db.connect(() => {
+			socketHandler.init(server, () => console.log('Geoffrey is ready'));
+
 			// ToDo: Make Tweetfetcher indipendent (But first research for Google Bigtables)
 			/* tweetfetcher.init(db, () => {
 				socketHandler.init(server, () => console.log('Geoffrey is ready'));
