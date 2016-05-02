@@ -75,6 +75,9 @@
 			type: 'get',
 			dataType: 'json',
 			cache: false,
+			xhrFields: {
+				withCredentials: true
+			},
 			success: function(res) {
 				console.log('The response from the server is = ', res);
 				if ( res.hasOwnProperty('err') ) {
@@ -116,6 +119,9 @@
 			data: formData,
 			dataType: 'json',
 			cache: false,
+			xhrFields: {
+				withCredentials: true
+			},
 			success: function( res ) {
 				console.log('The response from the server is = ', res);
 				if ( res.hasOwnProperty('err') ) {
@@ -149,6 +155,9 @@
 			data: formData,
 			dataType: 'json',
 			cache: false,
+			xhrFields: {
+				withCredentials: true
+			},
 			success: function( res ) {
 				console.log('The response from the server is = ', res);
 				if ( res.err ) {
