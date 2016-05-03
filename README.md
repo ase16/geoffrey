@@ -11,7 +11,6 @@ root folder.
 * Grab the `ASE16-************.json` file from our shared google docs folder and drop it into config folder.
 * Check if your `development.json` is properly set up (compare it to the one in our google docs folder).
 * Make sure you have mongo running on your machinge, e.g. with a statment like `mongod --dbpath="path/to/data/directory"`
-* **For local development you need to comment/uncomment the appropriate serviceUrl variable-lines in the beginning of public/javascripts/company/terms.js**
 * **Do not forget to run `node app` in the carlton project, to ensure that the term-management backend is up and running!!!**
 * Finally run `node app` in your geoffrey project.
 

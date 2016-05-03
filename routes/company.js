@@ -3,6 +3,7 @@
 // Third-party modules
 var router = require('express').Router();
 var stormpath = require('express-stormpath');
+var request = require('request');
 
 // Custom modules
 var viz = require('./company/viz');
@@ -12,7 +13,7 @@ router.all('/*', stormpath.groupsRequired(['companies']), function(req, res, nex
 	next();
 });
 
-router.get('/main', function(req, res, next) {
+router.get('/main', function(req, res) {
 	res.render('company/main', {
 		title: 'Company Space - Main Screen',
 		email: req.user.email,
@@ -20,7 +21,7 @@ router.get('/main', function(req, res, next) {
 	});
 });
 
-router.get('/term-management', function(req, res, next) {
+router.get('/term-management', function(req, res) {
 	res.render('company/termManagement', {
 		title: 'Company Space - Term Management Screen',
 		email: req.user.email

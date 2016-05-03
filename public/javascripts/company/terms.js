@@ -1,9 +1,8 @@
 (function() {
 	"use strict";
 
-	// For local development comment/uncomment the appropriate lines (And make sure you start both apps, geoffrey as well as carlton)
-	// var serviceUrl = "http://localhost:3001";
-	var serviceUrl = "http://104.196.103.90:3001";
+	// We use a proxy route in our geoffrey server to forward /carlton-requests to carlton
+	var serviceUrl = '/carlton';
 
 	// We first define our html building blocks that are used in our terms management screen
 	var termsHTML = '<div class="terms"></div>';
@@ -75,9 +74,6 @@
 			type: 'get',
 			dataType: 'json',
 			cache: false,
-			xhrFields: {
-				withCredentials: true
-			},
 			success: function(res) {
 				console.log('The response from the server is = ', res);
 				if ( res.hasOwnProperty('err') ) {
@@ -119,9 +115,6 @@
 			data: formData,
 			dataType: 'json',
 			cache: false,
-			xhrFields: {
-				withCredentials: true
-			},
 			success: function( res ) {
 				console.log('The response from the server is = ', res);
 				if ( res.hasOwnProperty('err') ) {
@@ -155,9 +148,6 @@
 			data: formData,
 			dataType: 'json',
 			cache: false,
-			xhrFields: {
-				withCredentials: true
-			},
 			success: function( res ) {
 				console.log('The response from the server is = ', res);
 				if ( res.err ) {

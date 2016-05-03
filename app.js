@@ -23,16 +23,18 @@ var stormpath = require('./routes/stormpath');
 var authentication = require('./routes/authentication');
 var admin = require('./routes/admin');
 var company = require('./routes/company');
+var carlton = require('./routes/carlton');
 
 // Create express application
 const app = express();													// --> http://expressjs.com/en/4x/api.html#app
-// store the server in a variable to pass it later on to socket.io
-const server = http.createServer(app);
+const server = http.createServer(app);									// store the server in a variable to pass it later on to socket.io
+
+// Before any middleware, we define the proxy routes to carlton, so body-parser etc. do not mess up the proxy --> // https://cloudant.com/blog/cors-and-reverse-proxies-in-node-js-express/
+app.use('/carlton', carlton);
 
 // Set up view/template engine and make static files accessible
 app.set('view engine', 'jade');											// Specify which template-engine to use (we do not need to "require" it since it is handled via ExpressJS)
 app.set('views', path.join(__dirname, 'views/material_design'));		// Specify where the templates can be found ("__dirname" returns absolute path of current file)
-//app.set('views', path.join(__dirname, 'views'));						// Specify where the templates can be found ("__dirname" returns absolute path of current file)
 app.use(bodyParser.json());												// --> https://github.com/expressjs/body-parser#bodyparserjsonoptions
 app.use(bodyParser.urlencoded({ extended: false }));					// --> https://github.com/expressjs/body-parser#bodyparserurlencodedoptions
 app.use(express.static(path.join(__dirname, 'public')));				// --> http://expressjs.com/en/starter/static-files.html
