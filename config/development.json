@@ -1,9 +1,9 @@
 {
     "twitter": {
-        "consumer_key": "fvdKNkBkMJ0pV1ZClfG4XVOcP",
-        "consumer_secret": "7fDhVD5bWP2pnaW3Aruuxw4p5DPMLUG99RxJpHp29cLNBblinK",
-        "access_token": "227996104-JY15hIkEg8wDu913iTbIponcOHM37F2HlAHm77Sm",
-        "access_token_secret": "dcSHcukFARd1OL545eTyJLFSK6lKhgwUkVLY0wnFiTv7B"
+        "consumer_key": "",
+        "consumer_secret": "",
+        "access_token": "",
+        "access_token_secret": ""
     },
 
     "mongodb": {
@@ -15,9 +15,9 @@
     },
 
     "gcloud": {
-        "projectId": "ase16-1255",
-        "keyFilename": "config/ASE16-cd70a773b84a.json",
-        "zone": "europe-west1-d"
+        "projectId": "",
+        "keyFilename": "",
+        "zone": ""
     },
 
     "log": {
