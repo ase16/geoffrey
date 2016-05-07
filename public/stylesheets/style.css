@@ -78,14 +78,32 @@
 	font-size:18px;
 }
 
+#monitoring-wrapper > div {
+	padding-bottom: 20px;
+	border-bottom: 1px solid #ccc;
+}
+
+#monitoring-wrapper > div h3 {
+	font-size: 24px;
+	color: black;
+	font-weight: bold;
+	margin-bottom: 0;
+}
+
+#monitoring-wrapper > div:first-child h3 {
+	margin: 0;
+}
+
 #monitoring-wrapper .graph {
 	padding: 20px;
 	box-shadow: 0 0 3px #aaa;
 	display: inline-block;
+	margin: 10px;
 }
 
 #monitoring-wrapper .graph span {
-	color: black;
+	color: #aaa;
+	font-size: 14px;
 	display: block;
 	margin-bottom: 20px;
 }

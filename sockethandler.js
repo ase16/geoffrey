@@ -18,11 +18,9 @@ const sockethandler = {
 
       console.log('socket.io is ready');
 
-      // send a tweet fetcher update to the client every 3s
-    //  setInterval(sendTweetFetcherLogs, 3000)
+      // send cpu usage metrics of the instance "geoffrey" to the client every 30s
+      setInterval(sendCpuUsageMetrics, 30 * 1000)
 
-      // send cpu usage metrics of the instance "geoffrey" to the client every 1m
-    //  setInterval(sendCpuUsageMetrics, 60 * 1000)
 
       callback()
   }
@@ -48,6 +46,9 @@ const waitForConnections = function() {
 
 const sendCpuUsageMetrics = function() {
 
+  if (openSockets.length ==  0 ) return;
+
+  console.log("sending cpu usage metrics to front-end")
   function getStartTime() {
     var d = new Date();
     return d.setHours(d.getHours() - 1);
@@ -57,7 +58,7 @@ const sendCpuUsageMetrics = function() {
     return new Date();
   }
 
-  monitoring.getCpuUsageTimeseries('geoffrey',getStartTime(), getEndTime(), function(err, res) {
+  monitoring.getCpuUsageTimeseries(getStartTime(), getEndTime(), function(err, res) {
     if (err) console.log(err)
     else {
       openSockets.forEach( (s) => s.emit('cpu-usage', res))
@@ -65,13 +66,13 @@ const sendCpuUsageMetrics = function() {
   })
 }
 
-const sendTweetFetcherLogs = function() {
-  tweetfetcher.getStats( (statsStr) => {
-    openSockets.forEach( (s) => {
-      s.emit('fetcher-log', statsStr);
-    })
-  })
-}
+// const sendTweetFetcherLogs = function() {
+//   tweetfetcher.getStats( (statsStr) => {
+//     openSockets.forEach( (s) => {
+//       s.emit('fetcher-log', statsStr);
+//     })
+//   })
+// }
 
 
 

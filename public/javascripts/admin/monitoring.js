@@ -1,28 +1,34 @@
+// String.prototype.startsWith polyfill for older browsers
+if (!String.prototype.startsWith) {
+  String.prototype.startsWith = function(searchString, position) {
+    position = position || 0;
+    return this.indexOf(searchString, position) === position;
+  };
+}
+
+// main content of this file
+
 var socket = io.connect('');
 
 socket.on('connect', function(socket){
   console.log("socket connected");
 });
 
-socket.on('cpu-usage', function(msg) {
-  console.log(msg)
+socket.on('cpu-usage', function(res) {
 
-	render(msg)
-  //$('#log-wrapper').append('<li class="mdl-list__item"><span class="mdl-list__item-primary-content">' + msg + '</span></li>');
-});
+	Object.keys(res).forEach(function(key){
+		render(res[key], key)
+	})
+})
 
 
 
-var render = function(data) {
+var render = function(data, instanceName) {
 
-	var $graph = $('<div class="graph">');
+	var $graph = getOrCreateGraphWrapper(instanceName);
 
-	$graph.append('<span>Node: Geoffrey</span>')
-
-	$('#monitoring-wrapper').append($graph)
-
-	var w = 500
-	var h = 400
+	var w = 400
+	var h = 300
 	var margin = { top: 0, bottom: 30, left: 20, right: 0}
 
 	var doubleValue = function (d) { return d.value.doubleValue }
@@ -66,10 +72,10 @@ var render = function(data) {
 				.attr("height", h)
 
 	var line = d3.svg.line()
-	    .x(function(d) { console.log(d.interval.startTime);
+	    .x(function(d) {
 				return xScale(new Date(d.interval.startTime));
 			})
-	    .y(function(d) { console.log(d.value.doubleValue)
+	    .y(function(d) {
 				return yScale(d.value.doubleValue); });
 
 	// the line diagram
@@ -98,74 +104,54 @@ var render = function(data) {
 
 };
 
+// returns a graph wrapper to append an svg to
+// this function also appends the graph wrapper to the according instance-group
+// wrapper (based on the instance-name)
+var getOrCreateGraphWrapper = function(instanceName) {
+
+	// this local function appends a on-the-fly-created graph wrapper to
+	// an instance-group wrapper (which might be created on-the-fly as well if not existents)
+	var appendToGroup = function(groupName, label) {
+
+		// the graph doesn't exist yet, so we have to render title, wrapper, svg from the ground up
+		var $graph = $('<div class="graph" data-instance="' + instanceName + '">');
+		$graph.append('<span>' + instanceName + '</span>')
+
+		// check if the instance-group wrapper already exists
+		if ($('#monitoring-wrapper').children('.' + groupName) > 0) {
+			$('#monitoring-wrapper .' + groupName).append($graph)
+			return $graph;
+		}
+
+		// group wrapper does not exist yet
+		// therefore we create a new one and append it to the monitoring wrapper
+		var groupWrapper = $('<div class="' + groupName + '">')
+			.append("<h3>" + label + "</h3>")
+			.append($graph)
+
+		$('#monitoring-wrapper').append(groupWrapper);
+
+		return $graph
+	}
+
+	// if the graph of a gce instance already exists, remove it and
+	var $graph = $('#monitoring-wrapper .graph[data-instance="' + instanceName + '"]')
 
 
+	if ($graph.length > 0) {
+		// a graph has already been rendered before, so we will re-render only the svg
+		$graph.children('svg').remove()
+		return $graph
+	}
 
+	// graph hasn't been rendered before
 
-
-
-
-// function render() {
-//   // var margin = {top: 20, right: 20, bottom: 30, left: 50},
-//   //   width = 960 - margin.left - margin.right,
-//   //   height = 500 - margin.top - margin.bottom;
-//
-//   var formatDate = d3.time.format("%d-%b-%y");
-//
-//   var x = d3.time.scale()
-//       .range([0, width]);
-//
-//   var y = d3.scale.linear()
-//       .range([height, 0]);
-//
-//   var xAxis = d3.svg.axis()
-//       .scale(x)
-//       .orient("bottom");
-//
-//   var yAxis = d3.svg.axis()
-//       .scale(y)
-//       .orient("left");
-//
-//   var line = d3.svg.line()
-//       .x(function(d) { return x(d.date); })
-//       .y(function(d) { return y(d.close); });
-//
-//   var svg = d3.select("body").append("svg")
-//       .attr("width", width + margin.left + margin.right)
-//       .attr("height", height + margin.top + margin.bottom)
-//     .append("g")
-//       .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
-//
-//   d3.tsv("data.tsv", type, function(error, data) {
-//     if (error) throw error;
-//
-//     x.domain(d3.extent(data, function(d) { return d.date; }));
-//     y.domain(d3.extent(data, function(d) { return d.close; }));
-//
-//     svg.append("g")
-//         .attr("class", "x axis")
-//         .attr("transform", "translate(0," + height + ")")
-//         .call(xAxis);
-//
-//     svg.append("g")
-//         .attr("class", "y axis")
-//         .call(yAxis)
-//       .append("text")
-//         .attr("transform", "rotate(-90)")
-//         .attr("y", 6)
-//         .attr("dy", ".71em")
-//         .style("text-anchor", "end")
-//         .text("Price ($)");
-//
-//     svg.append("path")
-//         .datum(data)
-//         .attr("class", "line")
-//         .attr("d", line);
-//   });
-//
-//   function type(d) {
-//     d.date = formatDate.parse(d.date);
-//     d.close = +d.close;
-//     return d;
-//   }
-// }
+	if (instanceName.startsWith('geoffrey'))
+		return appendToGroup('geoffrey', 'Geoffrey-Nodes: main nodes delivering the web interface')
+	else if (instanceName.startsWith('carlton'))
+		return appendToGroup('carlton', 'Carlton-Nodes: Terms management nodes')
+	else if (instanceName.startsWith('will'))
+		return appendToGroup('will', 'Will-Nodes: Twitter fetcher nodes listening to the streams')
+	else if (instanceName.startsWith('jazz'))
+		return appendToGroup('jazz', 'Jazz-Nodes: Worker nodes for the sentiment analysis')
+}
