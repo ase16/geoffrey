@@ -1,7 +1,6 @@
 'use strict'
 
-const tweetfetcher = require('./tweetfetcher.js')
-const monitoring = require('./monitoring.js')
+const monitoring = require('./monitoring.js');
 let io = require('socket.io');
 const openSockets = [];
 
@@ -24,7 +23,7 @@ const sockethandler = {
 
       callback()
   }
-}
+};
 
 const waitForConnections = function() {
 
@@ -42,7 +41,7 @@ const waitForConnections = function() {
         openSockets.splice(i, 1);
      });
   })
-}
+};
 
 const sendCpuUsageMetrics = function() {
 
@@ -64,15 +63,7 @@ const sendCpuUsageMetrics = function() {
       openSockets.forEach( (s) => s.emit('cpu-usage', res))
     }
   })
-}
-
-// const sendTweetFetcherLogs = function() {
-//   tweetfetcher.getStats( (statsStr) => {
-//     openSockets.forEach( (s) => {
-//       s.emit('fetcher-log', statsStr);
-//     })
-//   })
-// }
+};
 
 
 

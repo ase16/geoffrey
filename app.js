@@ -14,9 +14,7 @@ var expressStormpath = require('express-stormpath');					// Our "Tenant" for Sto
 var bodyParser = require('body-parser');								// --> https://github.com/expressjs/body-parser
 
 // Custom modules
-const db = require('./dbModule.js');									// db
 const socketHandler = require('./sockethandler.js');					// socket handler
-const tweetfetcher = require('./tweetfetcher.js');
 
 // Routes & Route configurations
 var stormpath = require('./routes/stormpath');
@@ -52,13 +50,6 @@ app.use('/company', company);
 app.on('stormpath.ready', function() {
 	server.listen(3000, function () {
 		console.log('Geoffrey is listening on port 3000');
-		db.connect(() => {
-			socketHandler.init(server, () => console.log('Geoffrey is ready'));
-
-			// ToDo: Make Tweetfetcher indipendent (But first research for Google Bigtables)
-			/* tweetfetcher.init(db, () => {
-				socketHandler.init(server, () => console.log('Geoffrey is ready'));
-			}) */
-		})
+		socketHandler.init(server, () => console.log('Geoffrey is ready, including socket handler'));
 	});
 });
