@@ -6,7 +6,8 @@ if (!String.prototype.startsWith) {
   };
 }
 
-// main content of this file
+
+
 
 var socket = io.connect('');
 
@@ -118,7 +119,7 @@ var getOrCreateGraphWrapper = function(instanceName) {
 		$graph.append('<span>' + instanceName + '</span>')
 
 		// check if the instance-group wrapper already exists
-		if ($('#monitoring-wrapper').children('.' + groupName) > 0) {
+		if ($('#monitoring-wrapper').children('.' + groupName).length > 0) {
 			$('#monitoring-wrapper .' + groupName).append($graph)
 			return $graph;
 		}

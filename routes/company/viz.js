@@ -1,39 +1,122 @@
-// Dependencies for 3rd-Party modules (do not forget to npm install them)
-var twit = require('twit');					// https://github.com/ttezel/twit	(Twitter API Client for node. Supports both the REST and Streaming API of Twitter)
-var sentiment = require('sentiment');		// https://github.com/thisandagain/sentiment
-var moment = require('moment');				// http://momentjs.com/				(used to ease handling with dates and timezones)
+'use strict'
 
-// Dependency to make settings of the config files available
-var config = require('config');				// https://github.com/lorenwest/node-config
+const datastore = require('./../../datastore.js')
+
+
+
+// simple helper function to count the number of days between a start and an end date
+// eg. (16.5.2015,16.5.2015) => 1, (14.5.2015,16.5.2015) => 3
+const getNumDays = (d1, d2) => new Date(d2).getDay() - new Date(d1).getDay() + 1
 
 // At the moment the viz module has just one public function
 var viz = {
-	fetchTweets: function(searchParam, callback) {
 
-		function performSentimentAnalysis(tweets) {
-			const sentiments = [];
-			tweets.forEach( (tweet) => {
-				const text = tweet['text'].replace('#', '');
-				const senti = sentiment(text);
-				senti.tweet = tweet;
-				sentiments.push(senti);
-			});
+	/**
+	* load the requested data from the data store and aggregate on hour-precision
+	* @param {String} term - a term a user previously set
+	* @param {Date} startDate - starting point of the aggregation period (day-precision)
+	* @param {Date} endDate - ending point of the aggregation period (day-precision)
+	* @param {requestCallback} callback - arguments: error or an array of hourly-aggregated data
+	*/
+	loadAndAggregate: function(term, startDate, endDate, callback) {
 
-			return sentiments;
-		}
+		// get entities from the google data store
+		// an entity is an object created from a single will-node (worker) that
+		// stores a subset of all tweets+sentiments for a specific term at a specified day
+		datastore.getEntities(term, startDate, endDate, (err, entities) => {
 
-		// Establish the twitter config (grab your keys at dev.twitter.com)
-		var twitterCredentials = config.get('twitter');
-		var twitter = new twit(twitterCredentials);
+			if (err) {
+				callback(err)
+				return
+			}
 
-		var pastDate = moment().subtract(3, 'day').format("YYYY-M-D");
-		var searchQuery = '' + searchParam + ' since:' + pastDate;
 
-		twitter.get('search/tweets', {q: searchQuery, count:200}, function(err, data) {
-			var sentiments = performSentimentAnalysis(data['statuses']);
-			callback(err, sentiments);
-		});
+			// create an array element for each hour that is between start and end date
+			// and fill it with an empty object-prototype
+			const hours = new Array(24 * getNumDays(startDate, endDate))
+
+			for (let i = 0; i < hours.length; i++) {
+				hours[i] = { numTweets: 0, aggrSentiment: 0, positive: {}, negative: {} }
+			}
+
+
+			// remember, an entity represents a day
+			entities.forEach((entity, i) => {
+
+				// combine multiple entities that happend at the same day and
+				// save everything in the array at the associated place
+				const hrsOffset = (getNumDays(startDate, entity.date) - 1) * 24
+				for (let hour of Object.keys(entity.hourBuckets)) {
+					hours[hrsOffset + Number.parseInt(hour)] =
+							combineEntityHour(hours[hrsOffset + Number.parseInt(hour)],
+							entity.hourBuckets[hour])
+				}
+			})
+
+
+			// final step: for every hour in the hours array
+			// add the date exact date (hour-precision)
+			hours.forEach((h, i) => {
+				const date = new Date(startDate).setHours(i)
+				h.date = new Date(date);
+			})
+
+			callback(null, hours)
+		})
 	}
 };
+
+// combine two data objects of the same hours
+// (requires specific format, see code above)
+const combineEntityHour = function(obj1, obj2) {
+
+	// this function aggregates obj1 and obj2 word-tokens
+	// e.g. ({'bad': 5}, {'bad': 2}) -> {'bad': 7}
+	const combineTokens = function(prop) {
+
+		const out = {}
+
+		// the proberty is either 'negative' or 'positive'
+		if (obj1.hasOwnProperty(prop) && obj1[prop] != null) {
+
+			for (let key of Object.keys(obj1[prop])) {
+
+				if (obj2[prop].hasOwnProperty(key)) {
+					// same property key in obj1 and obj2 found, sum its values
+					out[key] = obj1[prop][key] + obj2[prop][key]
+					delete obj2[prop][key]
+				} else {
+					out[key] = obj1[prop][key]
+				}
+			}
+		}
+
+		// this loop adds the leftofter-property keys of obj2
+		// to the output object (matched property keys got deleted before (see above))
+		if (obj2.hasOwnProperty(prop) && obj2[prop] != null) {
+			for (let key of Object.keys(obj2[prop])) {
+				out[key] = obj2[prop][key]
+			}
+		}
+
+		return out
+	}
+
+
+	const numTweets = obj1.numTweets + obj2.numTweets
+	const aggrSentiment = ((obj1.numTweets * obj1.aggrSentiment)
+			+ (obj2.numTweets * obj2.aggrSentiment)) / numTweets
+
+	const positive = combineTokens('positive')
+	const negative = combineTokens('negative')
+
+	return {
+		numTweets: numTweets,
+		aggrSentiment: aggrSentiment,
+		positive: positive,
+		negative: negative
+	}
+}
+
 
 module.exports = viz;

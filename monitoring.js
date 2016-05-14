@@ -12,10 +12,6 @@ const googleProjectName = 'projects/' + require('config').get("gcloud").projectI
 const monitoringScopes = ['https://www.googleapis.com/auth/cloud-platform'];
 
 
-
-// require('dotenv').config({path: '.env.gce'});							// Automatically reads in .env files and sets environment variables --> https://github.com/motdotla/dotenv#usage
-
-
 /**
 * Get an authentication client for google api calls
 * @param {requestCallback} callback - a function to be called when the server
@@ -145,7 +141,7 @@ var Monitoring = {
         if (err) return callback(err)
 
         else {
-          //.. and now start getting the data from google
+          //.. and now start fetching the data from google
           callAPIUntilNoNextTokensAvailable(authClient, null,  function(err) {
             if (!err) callback(null, dataPointsPerInstance)
             else callback(err)
@@ -154,23 +150,5 @@ var Monitoring = {
       })
     }
  }
-
-// function getStartTime() {
-//  var d = new Date();
-//  return d.setHours(d.getHours() - 1);
-// }
-//
-// function getEndTime() {
-//  return new Date();
-// }
-
-
- // Monitoring.getCpuUsageTimeseries(getStartTime(), getEndTime(), function(err, res) {
- //   if (err) console.log(err)
- //   else {
- //     console.log("result")
- //     console.log(JSON.stringify(res, null,2));
- //   }
- // })
 
 module.exports = Monitoring;

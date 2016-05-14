@@ -116,6 +116,7 @@ line, path {
 
 g.tick line {
 	stroke: #ccc;
+	stroke-dasharray: 2,2;
 }
 
 path.line {
@@ -125,6 +126,11 @@ path.line {
 
 circle {
 	cursor: pointer;
+}
+
+rect {
+	fill: #6FE482;
+
 }
 
 .tooltip {
