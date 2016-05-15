@@ -172,12 +172,25 @@ span.displayVM, span.displayVMState {
 	50%  { background-color: rgba(255, 204, 0, 0.5); }
 }
 
-#viz-wrapper { margin-top: 20px; }
+#viz-wrapper {
+	margin-top: 20px;
+	height: 300px;
+}
 
 #terms-wrapper {
 	display: flex;
 	flex-direction: row;
 	align-items: center;
+}
+
+#date-wrapper {
+	padding: 20px 0;
+}
+
+#date-wrapper span {
+	padding-right: 20px;
+	font-size: 30px;
+	color: black;
 }
 
 #terms-wrapper > div {

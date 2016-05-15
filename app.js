@@ -9,12 +9,15 @@ require('dotenv').config({path: '.env.stormpath'});						// Automatically reads 
 require('dotenv').config({path: '.env.gce'});							// Automatically reads in .env files and sets environment variables --> https://github.com/motdotla/dotenv#usage
 var express = require('express');
 var expressStormpath = require('express-stormpath');					// Our "Tenant" for Stormpath is "majestic-panther" --> https://api.stormpath.com/login
+const config = require('config');
+
 
 // Express modules
 var bodyParser = require('body-parser');								// --> https://github.com/expressjs/body-parser
 
 // Custom modules
 const socketHandler = require('./sockethandler.js');					// socket handler
+const datastore = require('./datastore.js') // handles google data store stuff
 
 // Routes & Route configurations
 var stormpath = require('./routes/stormpath');
@@ -46,10 +49,14 @@ app.use('/', authentication);
 app.use('/admin', admin);
 app.use('/company', company);
 
+
+
+
 // Our server can start listening as soon as the Stormpath SDK has been initialized
 app.on('stormpath.ready', function() {
 	server.listen(3000, function () {
 		console.log('Geoffrey is listening on port 3000');
+		datastore.connect(config.get('gcloud'), () => { console.log("datastore is connected")})
 		socketHandler.init(server, () => console.log('Geoffrey is ready, including socket handler'));
 	});
 });

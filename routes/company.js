@@ -38,11 +38,12 @@ router.get('/viz', function(req, res, next) {
 // Handle post requests when user requests a visualization for a term
 router.post('/viz/load-data', function(req, res, next) {
 	var term = req.body.term;
-	// TODO start date
-	// TODO end date
-	viz.loadAndAggregate(term, 1463058107000, 1463058107000, (err, hrlyAggr) => {
+	var sd = req.body.startDay;
+	var ed = req.body.endDay;
+
+	viz.loadAndAggregate(term, sd, ed, (err, hrlyAggr) => {
 		if (!err) res.json(hrlyAggr)
-		else res.json({ error: "an error occurred while aggregating the data" })
+		else res.json({ err: err })
 	})
 });
 

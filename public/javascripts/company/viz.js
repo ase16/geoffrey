@@ -1,56 +1,113 @@
+var date = new Date()
+var term;
 
-// load the analyzed data
-// $.ajax({
-//     url: '/company/terms',
-//     type: 'get',
-//     dataType: 'json',
-//     cache: false,
-//     success: function( res ) {
-// 		res.terms.forEach(function(t) {
-// 			var elem = $('<div>').text(t).click(function() {
-// 				$('#viz-wrapper').children().remove();
-// 				$('#viz-wrapper').append('<span>loading...</span>');
-// 				getData(t);
-// 			});
-// 			$('#terms-wrapper').append(elem);
-// 		})
-//     },
-// 	error: function() {
-// 		alert("something went wrong")
-// 	}
-// });
-
-var terms = ['Batman', 'Superman', 'Obama']
+var DateInputFields = (function($) {
 
 
-terms.forEach(function(t) {
-	var elem = $('<div>').text(t).click(function() {
-		$('#viz-wrapper').children().remove();
-		$('#viz-wrapper').append('<span>loading...</span>');
-		getData(t);
-	});
-	$('#terms-wrapper').append(elem);
-})
+	var init = function() {
+		var dateSelected = $('<span class="date-selected">')
+		var next = $('<span class="next-day">').text('>').on('click',nextDay)
+		var prev = $('<span class="prev-day">').text('<').on('click', prevDay)
 
-var getData = function(term) {
+		$('#date-wrapper')
+			.append(prev)
+			.append(dateSelected)
+			.append(next)
+
+		renderDate()
+	}
+
+	var renderDate = function() {
+		$('.date-selected').text(date.toDateString())
+	}
+
+	var nextDay = function() {
+		date.setDate(date.getDate() + 1)
+		renderDate()
+		if (term != "" && term != undefined) getData()
+	}
+
+	var prevDay = function() {
+		date.setDate(date.getDate() - 1)
+		renderDate()
+		if (term != "" && term != undefined) getData()
+	}
+
+	return {
+		init: init
+	}
+}(jQuery))
+
+DateInputFields.init()
+
+function getTerms() {
+	var req = {
+		url: '/carlton/company/terms',
+		type: 'get',
+		dataType: 'json',
+		cache: false,
+		success: function(res) {
+
+			if ( res.hasOwnProperty('err') ) {
+				console.log(res.err)
+				return;
+			}
+
+			res.terms.forEach(function(t) {
+
+				var elem = $('<div>').text(t).click(function() {
+					term = t
+					getData(t);
+				})
+
+				$('#terms-wrapper').append(elem);
+			})
+
+		},
+		error: function( xhr, status, errorThrown ) {
+			console.log('AJAX ERROR: xhr = ', xhr);
+			console.log('AJAX ERROR: status = ', status);
+			console.log('AJAX ERROR: errorThrown = ', errorThrown);
+		}
+	};
+
+	$.ajax(req);
+}
+
+getTerms()
+
+var getData = function() {
 	console.log("get data for term", term);
 
+	$('#viz-wrapper').children().remove();
+	$('#viz-wrapper').append('<span>loading data...</span>');
+
+	var input = { 'term' : term, 'startDay': date, 'endDay':	date }
+
 		// data not yet loaded
-		$.post('/company/viz/load-data', { 'term' : term },
+		$.post('/company/viz/load-data', input,
 			// callback function
 			function(data) {
-
+				if (data.hasOwnProperty('err')) {
+					alert("an error occurred")
+					console.log(data.err)
+					return;
+				}
+				console.log(data);
 				render(data, term);
 			}
-		);
+		)
 };
 
 
 var render = function(data, term) {
 
-
 	$('#viz-wrapper').children().remove();
-	$('#viz-wrapper').append($('<h3>').text('Sentiment analysis for the term ' + term));
+
+	if (data.length == 0) {
+		$('#viz-wrapper').append('<span>No data exists for this day and term</span>');
+		return;
+	}
 
 
 	var w = 800
@@ -105,45 +162,46 @@ var render = function(data, term) {
 	var svg = d3.select('#viz-wrapper')
 				.append("svg")
 				.attr("width", w)
-				.attr("height", h)
+				.attr("height", h);
 
 
-	// x axis
-  svg.append('g')
-      .attr('class', 'x axis')
-      .attr('transform', 'translate(0, ' + (h - margin.top - margin.bottom) + ')')
-      .call(xAxis);
-
-	// y axis
-	svg.append("g")
-      .attr("class", "y axis")
-			.attr('transform', 'translate(' +  margin.left + ',0)')
-      .call(yAxis)
-    .append("text")
-      .attr("transform", "rotate(-90)")
-      .attr("y", 6)
-      .attr("dy", ".71em")
-      .style("text-anchor", "end")
-      .text("Sentiment");
 
 	// the bar chart
 	svg.selectAll("rect")
 		 .data(data)
 		 .enter()
 		 .append("rect")
-	//	 .attr('transform', 'translate(20,0)')
 		 .attr("x", function(d, i) {
 				return (i * ((w - margin.left - margin.right) / data.length)) + margin.left;
 		 })
 		 .attr('data', function(d, i) { return i + ' ' + new Date(d.date) + ' ' + d.numTweets + ' ' + d.aggrSentiment})
 		 .attr("y", function(d) {
-
 				return (h - yRectScale(d.numTweets)) - margin.top - margin.bottom;
 		 })
 		 .attr("width", (w - margin.left - margin.right) / data.length)
 		 .attr("height", function(d) {
 				return yRectScale(d.numTweets)
-		 })
+		 });
+
+
+		 // bar chart labels
+		 svg.selectAll("text.label")
+	 		 .data(data)
+	 		 .enter()
+	 		 .append("text")
+	 		 .text(function(d) {
+				  if (d.numTweets == 0) return ""
+	 			  return d.numTweets;
+	 		 })
+	 		 .attr("font-family", "sans-serif")
+	 		 .attr("font-size", "12px")
+	 		 .attr("fill", "white")
+			 .attr("transform", "rotate(90)")
+			 .attr("transform", function(d,i) {
+				 var x = ((i * ((w - margin.left - margin.right) / data.length)) + margin.left) + 13
+				 var y = ((h - yRectScale(d.numTweets)) - margin.top - margin.bottom) + 10
+				 return "translate(" + x + "," + y +  ") rotate(90)"
+			 })
 
 
 	// function passed as arg a few loc's below
@@ -161,99 +219,25 @@ var render = function(data, term) {
 			.attr('transform', 'translate(0,0)')
 			.attr("d", line(data));
 
-};
 
-//
-// var render = function(data, term) {
-// 	console.log("render accepted", data);
-//
-// 	$('#viz-wrapper').children().remove();
-// 	$('#viz-wrapper').append($('<h2>').text('Sentiment analysis for the term ' + term));
-//
-// 	var w = 800
-// 	var h = 400
-// 	var margin = { top: 20, bottom: 20, left: 50, right: 5}
-// 	var marginTop = 5
-//
-// 	var yScale = d3.scale.linear()
-// 		 .domain([1, -1])
-// 		 .range([margin.top, h - margin.top - margin.bottom]);
-//
-// 	 // get max and min dates - this assumes data is sorted
-// 	 var minDate = new Date(data[data.length-1].tweet.created_at),
-// 	     maxDate = new Date(data[0].tweet.created_at);
-//
-// 	var xScale = d3.time.scale()
-// 			.domain([minDate, maxDate])
-// 			.range([margin.left, w -margin.right]);
-//
-// 	var xAxis = d3.svg.axis()
-// 	    .scale(xScale)
-// 	    .orient("bottom");
-//
-// 	var yAxis = d3.svg.axis()
-// 	    .scale(yScale)
-// 	    .orient("left");
-//
-// 	var xAxis = d3.svg.axis()
-// 	    .scale(xScale)
-// 	    .orient('bottom')
-// 	    // .ticks(d3.time.days, 1)
-// 	    // .tickFormat(d3.time.format('%a %d'))
-// 	    // .tickSize(0)
-// 	    .tickPadding(8);
-//
-// 	var yAxis = d3.svg.axis()
-// 	    .scale(yScale)
-// 	    .orient('left')
-// 	    .tickPadding(8);
-//
-// 	var div = d3.select("body").append("div")
-//     .attr("class", "tooltip")
-//     .style("opacity", 0);
-//
-// 	//Create SVG element
-// 	var svg = d3.select("#viz-wrapper")
-// 				.append("svg")
-// 				.attr("width", w)
-// 				.attr("height", h)
-//
-// 	svg.selectAll("circle")
-// 		 .data(data)
-// 		 .enter()
-// 		 .append("circle")
-// 		 .attr("cx", function(d) {
-// 			 return xScale(new Date(d.tweet.created_at))
-// 		 })
-// 		 .attr("cy", function(d) {
-// 			  return yScale(d.comparative)
-// 		 })
-// 		 .attr("r", function(d) {
-// 				return 5;
-// 		 })
-// 		 .on("mouseover", function(d) {
-//         div.transition()
-//         	.duration(200)
-//           .style("opacity", .9);
-//
-// 					div.html(d.tweet.created_at + "<br/>"  + d.tweet.text)
-//           	.style("left", (d3.event.pageX + 10) + "px")
-//           	.style("top", (d3.event.pageY - 28) + "px");
-//             })
-//         .on("mouseout", function(d) {
-//             div.transition()
-//                 .duration(500)
-//                 .style("opacity", 0);
-//         });
-//
-// 	 svg.append('g')
-// 	     .attr('class', 'x axis')
-// 	     .attr('transform', 'translate(0, ' + (h - margin.top - margin.bottom) + ')')
-// 	     .call(xAxis);
-//
-// 	 svg.append('g')
-// 	   .attr('class', 'y axis')
-// 		 .attr('transform', 'translate(' +  margin.left + ',0)')
-// 	   .call(yAxis);
-//
-// };
+
+
+	// x axis
+	svg.append('g')
+			.attr('class', 'x axis')
+			.attr('transform', 'translate(0, ' + (h - margin.top - margin.bottom) + ')')
+			.call(xAxis);
+
+	// y axis
+	svg.append("g")
+			.attr("class", "y axis")
+			.attr('transform', 'translate(' +  margin.left + ',0)')
+			.call(yAxis)
+		.append("text")
+			.attr("transform", "rotate(-90)")
+			.attr("y", 6)
+			.attr("dy", ".71em")
+			.style("text-anchor", "end")
+			.text("Sentiment");
+
+};

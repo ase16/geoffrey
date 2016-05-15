@@ -30,23 +30,32 @@ var viz = {
 				return
 			}
 
+			// if there are no entities found in the data store, return an empty array
+			if (entities.length == 0) {
+				callback(null, [])
+				return
+			}
 
 			// create an array element for each hour that is between start and end date
 			// and fill it with an empty object-prototype
 			const hours = new Array(24 * getNumDays(startDate, endDate))
 
 			for (let i = 0; i < hours.length; i++) {
-				hours[i] = { numTweets: 0, aggrSentiment: 0, positive: {}, negative: {} }
+				hours[i] = { numTweets: 0, aggrSentiment: 0, positive: {}, negative: {}, date: {} }
 			}
 
 
 			// remember, an entity represents a day
 			entities.forEach((entity, i) => {
 
+				// console.log("ENTITY", i)
+				// console.log(entity)
+
 				// combine multiple entities that happend at the same day and
 				// save everything in the array at the associated place
 				const hrsOffset = (getNumDays(startDate, entity.date) - 1) * 24
 				for (let hour of Object.keys(entity.hourBuckets)) {
+					console.log("HOUR", hour)
 					hours[hrsOffset + Number.parseInt(hour)] =
 							combineEntityHour(hours[hrsOffset + Number.parseInt(hour)],
 							entity.hourBuckets[hour])
@@ -77,7 +86,7 @@ const combineEntityHour = function(obj1, obj2) {
 		const out = {}
 
 		// the proberty is either 'negative' or 'positive'
-		if (obj1.hasOwnProperty(prop) && obj1[prop] != null) {
+		if (obj1.hasOwnProperty(prop) && obj1[prop] != null && obj2[prop] != null) {
 
 			for (let key of Object.keys(obj1[prop])) {
 
@@ -103,9 +112,18 @@ const combineEntityHour = function(obj1, obj2) {
 	}
 
 
+
 	const numTweets = obj1.numTweets + obj2.numTweets
-	const aggrSentiment = ((obj1.numTweets * obj1.aggrSentiment)
-			+ (obj2.numTweets * obj2.aggrSentiment)) / numTweets
+	let aggrSentiment = 0
+	if (numTweets != 0)
+		aggrSentiment = obj1.aggrSentiment + obj2.aggrSentiment / numTweets
+
+	// console.log("obj1.numTweets", obj1.numTweets)
+	// console.log("obj2.numTweets", obj2.numTweets)
+	// console.log("obj1.aggr", obj1.aggrSentiment)
+	// console.log("obj2.aggr", obj2.aggrSentiment)
+	// console.log("numTweets", numTweets)
+	// console.log("aggrSentiment", aggrSentiment)
 
 	const positive = combineTokens('positive')
 	const negative = combineTokens('negative')
