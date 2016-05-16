@@ -20,6 +20,8 @@ var viz = {
 	*/
 	loadAndAggregate: function(term, startDate, endDate, callback) {
 
+		term = term.trim().toLowerCase()
+
 		// get entities from the google data store
 		// an entity is an object created from a single will-node (worker) that
 		// stores a subset of all tweets+sentiments for a specific term at a specified day
@@ -55,7 +57,7 @@ var viz = {
 				// save everything in the array at the associated place
 				const hrsOffset = (getNumDays(startDate, entity.date) - 1) * 24
 				for (let hour of Object.keys(entity.hourBuckets)) {
-					console.log("HOUR", hour)
+					// console.log("HOUR", hour)
 					hours[hrsOffset + Number.parseInt(hour)] =
 							combineEntityHour(hours[hrsOffset + Number.parseInt(hour)],
 							entity.hourBuckets[hour])
