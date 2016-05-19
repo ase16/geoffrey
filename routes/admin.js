@@ -6,6 +6,7 @@ var stormpath = require('express-stormpath');
 
 // Custom modules
 var vms = require('./admin/vms');
+var monitoring = require('./admin/monitoring')
 
 router.get('/*', stormpath.groupsRequired(['admins']), function(req, res, next) {
 	next();
@@ -20,15 +21,8 @@ router.get('/main', function(req, res, next) {
 	});
 });
 
-router.get('/monitoring', function(req, res) {
-	res.render('admin/monitoring', {
-		title: 'Admin Space - Monitoring',
-		email: req.user.email,
-		user: req.user,
-		admin: true
-	});
-});
 
+/*
 router.get('/fetcherlog', function(req, res, next) {
 	res.render('admin/fetcherlog', {
 		title: 'Admin Space - Twitter Fetcher Log',
@@ -44,6 +38,12 @@ router.get('/vm-management', function(req, res, next) {
 		admin: true
 	});
 });
+*/
+
+router.use('/monitoring', monitoring)
+
+
+/* Oli, do we still need this??*/
 
 router.route('/vms')
 

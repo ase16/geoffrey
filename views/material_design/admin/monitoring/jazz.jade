@@ -1,0 +1,18 @@
+extends ../../layout.jade
+
+block content
+	.customContainer
+		.mdl-grid
+			.mdl-cell.mdl-cell--12-col.mdl-cell--8-col-tablet
+				.card-header.fetcherlog.mdl-card.mdl-shadow--2dp
+					.mdl-card__title
+						h2.mdl-card__title-text=title
+					.mdl-card__actions.mdl-card--border
+					.mdl-card__supporting-text
+						#monitoring-wrapper
+	
+	script(src='https://cdn.socket.io/socket.io-1.4.5.js')
+	script(src='//d3js.org/d3.v3.min.js')
+	script(src='./../../javascripts/admin/monitoring/jazz.js')
+		
+	
