@@ -78,34 +78,48 @@
 	font-size:18px;
 }
 
-#monitoring-wrapper > div {
-	padding-bottom: 20px;
-	border-bottom: 1px solid #ccc;
+.row > div {
+	width: 50%;
 }
 
-#monitoring-wrapper > div h3 {
-	font-size: 24px;
+.row {
+	display: flex;
+	flex-direction: row;
+	align-items: center;
+}
+
+#status-wrapper {
 	color: black;
-	font-weight: bold;
-	margin-bottom: 0;
-}
-
-#monitoring-wrapper > div:first-child h3 {
-	margin: 0;
-}
-
-#monitoring-wrapper .graph {
+	height: 340px;
 	padding: 20px;
 	box-shadow: 0 0 3px #aaa;
 	display: inline-block;
 	margin: 10px;
 }
 
-#monitoring-wrapper .graph span {
+#nodes-wrapper > div {
+	padding-bottom: 20px;
+	border-bottom: 1px solid #ccc;
+}
+
+#nodes-wrapper .graph,
+#avg-wrapper .graph {
+	padding: 20px;
+	box-shadow: 0 0 3px #aaa;
+	display: inline-block;
+	margin: 10px;
+}
+
+#nodes-wrapper .graph span,
+#avg-wrapper .graph span  {
 	color: #aaa;
 	font-size: 14px;
 	display: block;
 	margin-bottom: 20px;
+}
+
+.graph.small text {
+	font-size: 12px;
 }
 
 line, path {
