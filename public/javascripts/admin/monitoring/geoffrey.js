@@ -1,22 +1,21 @@
-console.log("hallöchen from geoffrey")
-// // String.prototype.startsWith polyfill for older browsers
-// if (!String.prototype.startsWith) {
-//   String.prototype.startsWith = function(searchString, position) {
-//     position = position || 0;
-//     return this.indexOf(searchString, position) === position;
-//   };
-// }
-//
-//
-//
-//
-// var socket = io.connect('');
-//
-// socket.on('connect', function(socket){
-//   console.log("socket connected");
-// });
-//
-// socket.on('cpu-usage', function(res) {
+// trying to build a socket connection to the server
+socket = io.connect('', {query: "nodeType=geoffrey"});
+
+socket.on('connect', function() {
+  console.log("socket connected");
+});
+
+// the socket will automatically try to reconnect
+socket.on('disconnect', function() {
+  console.log("socket is disconnected")
+});
+
+
+socket.on('cpu-usage', function(res) {
+  console.log(res)
+  
+})
+
 //
 // 	Object.keys(res).forEach(function(key){
 // 		render(res[key], key)

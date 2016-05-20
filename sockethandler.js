@@ -2,69 +2,117 @@
 
 const monitoring = require('./monitoring.js');
 let io = require('socket.io');
-const openSockets = [];
+
+// a map to store open socket connections
+const openSockets = new Map()
+openSockets.set('geoffrey', [])
+openSockets.set('carlton', [])
+openSockets.set('will', [])
+openSockets.set('jazz', [])
+
+// a map to store cpu metrics for different node types
+const cpuMetrics = new Map()
+cpuMetrics.set('geoffrey', {})
+cpuMetrics.set('carlton', {})
+cpuMetrics.set('will', {})
+cpuMetrics.set('jazz', {})
 
 
-const sockethandler = {
+const handleConnections = function() {
 
-  // this should only be called at startup
-	init: function(server, callback) {
+  io.sockets.on('connection', function(socket) {
 
-      io = io.listen(server);
+    const query = socket.handshake.query
 
-      // waiting for incoming client socket connection requests
-      waitForConnections();
+    if ( ! query.hasOwnProperty('nodeType')) {
+      console.log('connection for socket [' + socket.id + '] declined because of missing handshake query attribute "nodeType"');
+      socket.disconnect()
+      return
+    }
 
-      console.log('socket.io is ready');
+    if ( ! isValidNodeType(query.nodeType)) {
+      console.log('connection for socket [' + socket.id + '] declined because of invalid nodeType');
+      socket.disconnect()
+      return
+    }
 
-      // send cpu usage metrics of the instance "geoffrey" to the client every 30s
-      setInterval(sendCpuUsageMetrics, 30 * 1000)
+    // success, we have a valid socket connection
+    console.log('socket [' + socket.id + '] registered for metrics about [' + query.nodeType + '] nodes')
+
+    // add it to the Map
+    openSockets.get(query.nodeType).push(socket)
 
 
-      callback()
-  }
-};
+    // and now send the first burst of data to the client to render the diagram
+    socket.emit('cpu-usage', cpuMetrics.get(query.nodeType))
 
-const waitForConnections = function() {
 
-  io.sockets.on('connection', function(s) {
-
-    console.log("socket connection established");
-    openSockets.push(s)
-
-    sendCpuUsageMetrics() // send an initial data load to render
-
-    s.on('disconnect', function() {
-        console.log(s.id, 'got disconnected!');
-
-        let i = openSockets.indexOf(s);
-        openSockets.splice(i, 1);
+    socket.on('disconnect', function() {
+        let i = openSockets.get(query.nodeType).indexOf(socket);
+        openSockets.get(query.nodeType).splice(i, 1);
+        console.log('socket [' + socket.id + '] has disconnected!');
      });
   })
 };
 
-const sendCpuUsageMetrics = function() {
+const isValidNodeType = (t) => {
+  return t === 'geoffrey' || t === 'carlton' || t === 'will' || t === 'jazz'
+}
 
-  if (openSockets.length ==  0 ) return;
+const sendCpuMetricsRecursively = function() {
+  openSockets.forEach((sockets, key) => {
+      sockets.forEach((s) => {
+        s.emit('cpu-usage', cpuMetrics.get(key))
+      })
+  })
 
-  console.log("sending cpu usage metrics to front-end")
-  function getStartTime() {
+  // repeat this funciton over and over every 30 s
+  setTimeout(sendCpuMetricsRecursively, 30 * 1000)
+}
+
+const updateCpuMetricsRecursively = function() {
+
+  function oneHourAgo() {
     var d = new Date();
     return d.setHours(d.getHours() - 1);
   }
 
-  function getEndTime() {
-    return new Date();
-  }
+  const startTime = oneHourAgo()
+  const endTime = new Date()
 
-  monitoring.getCpuUsageTimeseries(getStartTime(), getEndTime(), function(err, res) {
+  monitoring.getCpuUsageTimeseries(startTime, endTime, function(err, newMetrics) {
     if (err) console.log(err)
     else {
-      openSockets.forEach( (s) => s.emit('cpu-usage', res))
+
+      cpuMetrics.forEach((oldMetrics, key) => {
+        const filtered = monitoring.filter(newMetrics, key)
+        const withAverage = monitoring.addAvg(filtered, startTime)
+        // update the map entry
+        cpuMetrics.set(key, withAverage)
+      })
     }
+
+    // repeat this function over and over every 60 s
+    setTimeout(updateCpuMetricsRecursively, 60 * 1000)
   })
 };
 
+const sockethandler = {
 
+  // this should only be called at startup
+  init: function(server) {
 
-module.exports = sockethandler;
+    console.log("start listening for socket connections")
+
+    io = io.listen(server);
+
+    // waiting for incoming client socket connection requests
+    handleConnections()
+  },
+
+  startFetchingCpuMetrics: updateCpuMetricsRecursively,
+
+  startUpdatingClients: sendCpuMetricsRecursively
+}
+
+module.exports = sockethandler

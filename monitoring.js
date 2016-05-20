@@ -6,11 +6,9 @@
 
 
 
-
 const google = require('googleapis');
 const googleProjectName = 'projects/' + require('config').get("gcloud").projectId;
 const monitoringScopes = ['https://www.googleapis.com/auth/cloud-platform'];
-
 
 /**
 * Get an authentication client for google api calls
@@ -80,11 +78,12 @@ const toRFC33339 = (d) => JSON.parse(JSON.stringify(new Date(d)).replace('Z', '0
 var Monitoring = {
 
    /**
-    * get the CPU Usage Time Series for multiple instances of an instance group between a start- and end-time
+    * get the CPU Usage Time Series for multiple instances of an instance
+    * group between a start- and end-time
     * @param {Date} startTime
     * @param {Date} endTime
-    * @param {requestCallback} callback - a function to be called when the server
-    *      responds to the request
+    * @param {requestCallback} callback - a function to be called when
+    *      the server responds to the request
     */
     getCpuUsageTimeseries: function(startTime, endTime, callback) {
 
@@ -148,7 +147,141 @@ var Monitoring = {
           })
         }
       })
-    }
+    },
+
+
+    /**
+     * filter the cb respons-obj of the getCpuUsageTimeseries fn above by instance-name
+     * (for this task it checks if the nodeType is part of the instance name)
+     * @param {TimeSeries} metrics - received from the google api call
+     * @param {String} nodeType - e.g. 'Geoffrey'
+     * @return only the timeseries that match the nodeType
+     */
+     filter: function(metrics, nodeType) {
+
+       // we need to clone the object in order to not mutate the argument "metrics"
+       var cloned = JSON.parse(JSON.stringify(metrics));
+
+       Object.keys(cloned).forEach((k) => {
+         if (k.toLowerCase().indexOf(nodeType) < 0){
+          delete cloned[k]
+         }
+       })
+      return cloned
+     },
+
+      /**
+       * get the CPU Usage Average of all provided metrics. The value-arrays
+       * need to be sorted by date (earliest at the end)!
+       * @param {FilteredMetrics} metrics (properties: node-name, value: array of metrics of this node)
+       * @param {Date} startTime - the earliest time of all metrices
+       * @param {requestCallback} callback - a function to be called when the server
+       *      responds to the request
+       */
+       addAvg: function(metrics, startTime) {
+
+        /**
+         * helper function to compare two dates. precision: minutes
+         * @param {Date} d1
+         * @param {Date} d2
+         * @return 1 if d1 > d2, 0 or -1
+         */
+         function compareDateByMinute(d1, d2) {
+
+           d1 = new Date(d1)
+           d2 = new Date(d2)
+
+           // ignore secs and ms for minute precision
+           d1.setSeconds(0)
+           d1.setMilliseconds(0)
+           d2.setSeconds(0)
+           d2.setMilliseconds(0)
+
+           if (d1 > d2) return 1
+           if (d1.getTime() == d2.getTime()) return 0
+
+           return -1
+         }
+
+
+         // we need to clone the object in order to not mutate the argument "metrics"
+         var result = JSON.parse(JSON.stringify(metrics));
+         // this is initially the same as the result object
+         // but its value-arrays elements will be spliced later in this function
+         var consumed = JSON.parse(JSON.stringify(metrics));
+
+
+
+         // the current date is 'bigger/later' than what we will compare to
+         let earliestDate = new Date()
+         let nodeWithEarliestDate = '';
+
+         // the latest date will be close to the endTime (closer to now),
+         // therefore latestDate will be 'later/bigger' than the startTime
+         let latestDate = new Date(startTime)
+
+         //  find the earliest and latest date
+         Object.keys(result).forEach((k) => {
+
+           const ed = result[k][result[k].length-1].interval.startTime;
+           const ld = result[k][0].interval.startTime;
+
+           // find earliest
+           if (compareDateByMinute(ed, earliestDate) === -1) {
+             earliestDate = ed;
+             nodeWithEarliestDate = k;
+           }
+           // find latest
+           if (compareDateByMinute(ld, latestDate) === 1) {
+             latestDate = ld;
+           }
+         })
+
+         // go from the earliest date to the latest date and for all timeseries
+         // average the cpu usage per minute
+         let currentDate = new Date(earliestDate);
+         const averageCpuUsage = [] // intermediary result array
+
+         while (compareDateByMinute(currentDate, latestDate) <= 0) {
+
+           let numMatches = 0;
+           let sumMatches = 0;
+
+           Object.keys(consumed).forEach((k)=> {
+
+             const d = consumed[k][consumed[k].length-1].interval.startTime;
+             const v = consumed[k][consumed[k].length-1].value.doubleValue;
+
+             if (compareDateByMinute(currentDate, d) === 0 ){
+               numMatches++
+               sumMatches += v;
+               consumed[k].splice(consumed[k].length-1,1) // remove the earliest
+             }
+           })
+
+           // make a hard copy of the current Date
+           const st = new Date(currentDate)
+           let et = new Date(currentDate)
+           et = new Date(et.setMinutes(et.getMinutes() + 1))
+
+           averageCpuUsage.push({
+             interval: {
+               startTime: st,
+               endTime: et
+             },
+             value: {
+               doubleValue: sumMatches / numMatches
+             }
+           })
+
+           // increase the current date for the next loop
+           currentDate.setMinutes(currentDate.getMinutes() + 1)
+         }
+
+         result['avg'] = averageCpuUsage.reverse()
+         return result
+       }
  }
+
 
 module.exports = Monitoring;
