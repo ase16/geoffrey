@@ -72,6 +72,50 @@ var datastore = {
     });
 
 
+  },
+
+  // @param callback fn(err, res)
+  // --> res is an array containing terms e.g. ['jay-z', 'google', 'solarpower']
+  getJazzStats: function(callback) {
+        if (!isConnected()) {
+            return callback("Datastore is not connected", []);
+        }
+
+        var results = [];
+        var query = datastore.createQuery('JazzStat').order('created');				// --> https://googlecloudplatform.github.io/gcloud-node/#/docs/v0.32.0/datastore?method=createQuery
+        datastore.runQuery(query, function(err, entities) {		// --> https://googlecloudplatform.github.io/gcloud-node/#/docs/v0.32.0/datastore?method=runQuery
+            if (err) {
+                log.error("datastore.readJazzStat error: Error = ", err);
+                return callback(err, null);
+            }
+
+            entities.forEach(function(e) {
+                results.push(e.data);
+            });
+            callback(null, results);
+        });
+  },
+
+  // @param callback fn(err, res)
+  // --> res is an array containing terms e.g. ['jay-z', 'google', 'solarpower']
+  getWillStats: function(callback) {
+        if (!isConnected()) {
+            return callback("Datastore is not connected", []);
+        }
+
+        var results = [];
+        var query = datastore.createQuery('WillStat').order('created');				// --> https://googlecloudplatform.github.io/gcloud-node/#/docs/v0.32.0/datastore?method=createQuery
+        datastore.runQuery(query, function(err, entities) {		// --> https://googlecloudplatform.github.io/gcloud-node/#/docs/v0.32.0/datastore?method=runQuery
+            if (err) {
+                log.error("datastore.readWillStat error: Error = ", err);
+                return callback(err, null);
+            }
+
+            entities.forEach(function(e) {
+                results.push(e.data);
+            });
+            callback(null, results);
+        });
   }
 }
 
