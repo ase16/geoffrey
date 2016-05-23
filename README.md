@@ -34,12 +34,32 @@ With every other email address you'll be registered as a **company** user.
     - `/admin/vm-management` Screen to list, create and delete vms
     - `/admin/fetcherlog` Screen to visualize sentiment analysis of multiple terms
 
-## Terms Management in optimistic UI
-A first implmentation has been made of the terms management UI (without CSS, just HMTL & JS).
-An "Optimistic UI" approach has been used, which might be known from MeteorJS.
-So, if you add a new term, you immediately see it on the list, even though it hasn't
-been really stored on Stormpath and the DB yet. For you to see what's going on, I've
-artificially added a string "(Optimistic UI)" after the term when you add it. After
-the client got a response from server, the (Optimistic UI) disappears.
+## Load-Test Script
+```javascript
+var loadtest;
 
-## Playing round with the terms API
+function startLoadtest() {
+    loadtest = setInterval(loadtestRequest, 500);
+}
+
+function loadtestRequest() {
+    $.ajax({
+        url: '/dev/loadtest',
+        type: 'get',
+        dataType: 'json',
+        cache: false,
+        success: function( res ) {
+            console.log('Response from server = ', res);
+        },
+        error: function( xhr, status, errorThrown ) {
+            console.log('AJAX ERROR: xhr = ', xhr);
+            console.log('AJAX ERROR: status = ', status);
+            console.log('AJAX ERROR: errorThrown = ', errorThrown);
+        }
+    });
+}
+
+function stopLoadtest() {
+    clearInterval(loadtest);
+}
+```

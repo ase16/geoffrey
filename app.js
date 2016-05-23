@@ -17,7 +17,7 @@ var bodyParser = require('body-parser');								// --> https://github.com/expres
 
 // Custom modules
 const socketHandler = require('./sockethandler.js');					// socket handler
-const datastore = require('./datastore.js') // handles google data store stuff
+const datastore = require('./datastore.js');							// handles google data store stuff
 
 // Routes & Route configurations
 var stormpath = require('./routes/stormpath');
@@ -25,6 +25,7 @@ var authentication = require('./routes/authentication');
 var admin = require('./routes/admin');
 var company = require('./routes/company');
 var carlton = require('./routes/carlton');
+var dev = require('./routes/dev');
 
 // Create express application
 const app = express();													// --> http://expressjs.com/en/4x/api.html#app
@@ -48,6 +49,7 @@ app.use(expressStormpath.init(app, stormpath));							// --> http://docs.stormpa
 app.use('/', authentication);
 app.use('/admin', admin);
 app.use('/company', company);
+app.use('/dev', dev);
 
 
 
@@ -56,10 +58,10 @@ app.use('/company', company);
 app.on('stormpath.ready', function() {
 	server.listen(3000, function () {
 		console.log('Geoffrey is listening on port 3000');
-		datastore.connect(config.get('gcloud'), () => { console.log("datastore is connected")})
-		socketHandler.init(server)
-		socketHandler.startFetchingCpuMetrics()
-		socketHandler.startUpdatingClients()
+		datastore.connect(config.get('gcloud'), () => { console.log("datastore is connected")});
+		socketHandler.init(server);
+		socketHandler.startFetchingCpuMetrics();
+		socketHandler.startUpdatingClients();
 		console.log('Geoffrey is ready, including socket handler')
 	});
 });
