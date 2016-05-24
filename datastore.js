@@ -1,6 +1,11 @@
 'use strict';
 
 const gcloud = require('gcloud');
+const config = require('config');
+
+let stats = config.get("stats");
+let JAZZ_STATS_PER_REQUEST = stats.jazzStatsPerRequest;
+let WILL_STATS_PER_REQUEST = stats.willStatsPerRequest;
 
 // Authenticating on a per-API-basis.
 let db;
@@ -70,19 +75,53 @@ var datastore = {
       }
 
     });
+  },
 
+	// @param callback fn(err, res)
+	// --> res is an array containing jazz-stat objects (created, tweetsPerSec)
+	getJazzStats: function(callback) {
+		if (!isConnected()) {
+			return callback("Datastore is not connected", []);
+		}
 
-  }
-}
+		var query = db
+			.createQuery('JazzStat')
+			.autoPaginate(false)
+			.order('created')
+			.limit(JAZZ_STATS_PER_REQUEST);				// --> https://googlecloudplatform.github.io/gcloud-node/#/docs/v0.32.0/datastore?method=createQuery
+		db.runQuery(query, function(err, res) {
+			if (err) {
+				callback(err);
+				console.log(JSON.stringify(err, null, 2));
+			}
+			else {
+				callback(null, res.map((r) => r.data));
+			}
+		});												// --> https://googlecloudplatform.github.io/gcloud-node/#/docs/v0.32.0/datastore?method=runQuery
+	},
 
+	// @param callback fn(err, res)
+	// --> res is an array containing will-stat objects (batchSize, created)
+	getWillStats: function(callback) {
+		if (!isConnected()) {
+			return callback("Datastore is not connected", []);
+		}
 
-
-
-// datastore.connect(config.get('gcloud'), () => {
-//   datastore.getEntities(null, null, null, function(err, res) {
-//       console.log(err)
-//       console.log(res)
-//   })
-// })
+		var query = db
+			.createQuery('WillStat')
+			.autoPaginate(false)
+			.order('created')
+			.limit(WILL_STATS_PER_REQUEST);				// --> https://googlecloudplatform.github.io/gcloud-node/#/docs/v0.32.0/datastore?method=createQuery
+		db.runQuery(query, function(err, res) {
+			if (err) {
+				callback(err);
+				console.log(JSON.stringify(err, null, 2));
+			}
+			else {
+				callback(null, res.map((r) => r.data));
+			}
+		});												// --> https://googlecloudplatform.github.io/gcloud-node/#/docs/v0.32.0/datastore?method=runQuery
+	}
+};
 
 module.exports = datastore;

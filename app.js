@@ -58,7 +58,7 @@ app.use('/dev', dev);
 app.on('stormpath.ready', function() {
 	server.listen(3000, function () {
 		console.log('Geoffrey is listening on port 3000');
-		datastore.connect(config.get('gcloud'), () => { console.log("datastore is connected")});
+		datastore.connect(config.get('gcloud'), () => { console.log("datastore is connected"); });
 		socketHandler.init(server);
 		socketHandler.startFetchingCpuMetrics();
 		socketHandler.startUpdatingClients();

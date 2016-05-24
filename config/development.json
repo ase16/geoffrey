@@ -13,6 +13,11 @@
         "carlton": "http://localhost:3001"
     },
 
+    "stats": {
+        "jazzStatsPerRequest": 500,
+        "willStatsPerRequest": 500
+    },
+
     "admin-emails": [
         "andreas.albrecht@uzh.ch",
         "oliver.leumann@gmail.com",
