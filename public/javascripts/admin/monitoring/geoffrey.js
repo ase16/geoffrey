@@ -12,6 +12,7 @@ socket.on('disconnect', function() {
 
 
 socket.on('cpu-usage', function(res) {
+	console.log(res)
   Object.keys(res).forEach(function(key){
 
 		if (key === 'avg') {

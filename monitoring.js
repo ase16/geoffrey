@@ -52,7 +52,7 @@ const listCpuTimeseries = function(authClient, startTime, endTime, pageToken, ca
   monitoring.projects.timeSeries.list({
     auth: authClient,
     filter: 'metric.type="' + METRIC + '"',
-    pageSize: 100,
+    pageSize: 1000,
     'interval.startTime': startTime,
     'interval.endTime': endTime,
     name: googleProjectName,
@@ -107,9 +107,19 @@ var Monitoring = {
               const instanceName = serie.metric.labels.instance_name
               const points = serie.points
 
+              // check if a series for a specific instance has already been added to the output object
               if (dataPointsPerInstance.hasOwnProperty(instanceName)) {
-                dataPointsPerInstance[instanceName] =
-                    dataPointsPerInstance[instanceName].concat(points)
+
+                // if yes, check if it belongs to the front or the back of the array depending on its startTime
+                if (new Date(points[0].interval.startTime) >
+                    new Date(dataPointsPerInstance[instanceName][0].interval.startTime)) {
+
+                  dataPointsPerInstance[instanceName] =
+                      points.concat(dataPointsPerInstance[instanceName])
+                } else {
+                  dataPointsPerInstance[instanceName] =
+                      dataPointsPerInstance[instanceName].concat(points)
+                }
 
               } else {
                 dataPointsPerInstance[instanceName] = points
@@ -169,6 +179,7 @@ var Monitoring = {
        })
       return cloned
      },
+
 
       /**
        * get the CPU Usage Average of all provided metrics. The value-arrays
@@ -265,14 +276,14 @@ var Monitoring = {
            const st = new Date(currentDate)
            let et = new Date(currentDate)
            et = new Date(et.setMinutes(et.getMinutes() + 1))
-
+           const value = numMatches === 0 ? 0 : sumMatches / numMatches
            averageCpuUsage.push({
              interval: {
                startTime: st,
                endTime: et
              },
              value: {
-               doubleValue: sumMatches / numMatches
+               doubleValue: value
              }
            })
 
