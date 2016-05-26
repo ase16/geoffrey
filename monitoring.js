@@ -211,7 +211,6 @@ var Monitoring = {
          var consumed = JSON.parse(JSON.stringify(metrics));
 
 
-
          // the current date is 'bigger/later' than what we will compare to
          let earliestDate = new Date()
          let nodeWithEarliestDate = '';
@@ -248,6 +247,9 @@ var Monitoring = {
            let sumMatches = 0;
 
            Object.keys(consumed).forEach((k)=> {
+
+             //check if array is already empty, if yes return
+             if (consumed[k].length == 0 ) return;
 
              const d = consumed[k][consumed[k].length-1].interval.startTime;
              const v = consumed[k][consumed[k].length-1].value.doubleValue;
