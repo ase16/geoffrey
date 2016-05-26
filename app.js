@@ -59,9 +59,18 @@ app.on('stormpath.ready', function() {
 	server.listen(3000, function () {
 		console.log('Geoffrey is listening on port 3000');
 		datastore.connect(config.get('gcloud'), () => { console.log("datastore is connected"); });
+
+		// start listening for socket connection attempts 
 		socketHandler.init(server);
+		// start fetching cpu metrics from the google api
 		socketHandler.startFetchingCpuMetrics();
+		// start fetching jazz stats ( tweets/sec ) from the datastore
+		socketHandler.startFetchingJazzStats();
+		// start fetching will stats ( batch size ) from the datastore
+		socketHandler.startFetchingWillStats();
+		// this starts updating the clients via open sockets
 		socketHandler.startUpdatingClients();
+
 		console.log('Geoffrey is ready, including socket handler')
 	});
 });

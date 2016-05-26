@@ -21,3 +21,7 @@ socket.on('cpu-usage', function(res) {
 		}
   })
 })
+
+socket.on('batch-size-stats', function(res) {
+	renderBatchSizeStats(res)
+})

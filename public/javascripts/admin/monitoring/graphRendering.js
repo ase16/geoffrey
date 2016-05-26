@@ -1,5 +1,8 @@
 
-var renderSingleNode = function(data, instanceName, isAverageData) {
+var renderSingleNode = function(data, instanceName) {
+
+	// stop here if the data array is empty
+	if (data.length <= 0) return;
 
 	// if the graph of a gce instance already exists, remove it and
 	var $graph = $('#nodes-wrapper .graph[data-instance="' + instanceName + '"]')
@@ -90,8 +93,216 @@ var renderSingleNode = function(data, instanceName, isAverageData) {
 	$('#nodes-wrapper').append($graph);
 };
 
+var renderTweetsPerSecond = function(data) {
+
+	data.forEach(function(d) {
+		console.log(d.tweetsPerSec, new Date(d.created))
+	})
+
+	// stop here if the data array is empty
+	if (data.length <= 0) return;
+
+	// if the graph of a gce instance already exists, remove it and
+	var $graph = $('#tps-wrapper .graph')
+
+
+	if ($graph.length > 0) {
+		// a graph has already been rendered before, so we will re-render only the svg
+		$graph.children('svg').remove()
+
+	} else {
+		$graph = $('<div class="graph">');
+		$graph.append('<span>Twitter Streaming: Tweets per Second</span>');
+	}
+
+	var w = 900
+	var h = 300
+	var margin = { top: 10, bottom: 30, left: 25, right: 0}
+
+
+	var yScale = d3.scale.linear()
+		 .domain([100, 0])
+		 .range([margin.top, h - margin.top - margin.bottom]);
+
+	 // get max and min dates - this assumes data is sorted
+	var maxDate = new Date("max", data[0].created)
+	var minDate = new Date("min", data[data.length-1].created);
+
+	console.log(minDate)
+	console.log(maxDate)
+
+
+	var xScale = d3.time.scale()
+			.domain([maxDate, minDate])
+			.range([margin.left, w - margin.right]);
+
+
+	var yAxis = d3.svg.axis()
+			.scale(yScale)
+			.orient("left")
+			.tickFormat(d3.format("d"))
+			.innerTickSize(-w)
+			.outerTickSize(0)
+
+	var xAxis = d3.svg.axis()
+			.scale(xScale)
+			.orient('bottom')
+			.ticks(d3.time.days)
+			// .tickFormat(d3.time.format('%a %d'))
+			// .tickSize(0)
+			.tickPadding(8)
+			//.tickFormat(d3.time.format("%H:%M"))
+
+
+	//Create SVG element
+	var svg = d3.select($graph[0])
+				.append("svg")
+				.attr("width", w)
+				.attr("height", h)
+
+	var line = d3.svg.line()
+			.x(function(d) {
+				return xScale(new Date(d.created));
+			})
+			.y(function(d) {
+				return yScale(d.tweetsPerSec); });
+
+	// the line diagram
+	svg.append("path")
+			.datum(data)
+			.attr("class", "line")
+			.attr('transform', 'translate(10,0)')
+			.attr("d", line(data));
+
+	// x axis
+	svg.append('g')
+			.attr('class', 'x axis')
+			.attr('transform', 'translate(0, ' + (h - margin.top - margin.bottom) + ')')
+			.call(xAxis);
+
+	svg.append("g")
+			.attr("class", "y axis")
+			.attr('transform', 'translate(' +  margin.left + ',0)')
+			.call(yAxis)
+		.append("text")
+			.attr("transform", "rotate(-90)")
+			.attr("y", 6)
+			.attr("dy", ".71em")
+			.style("text-anchor", "end")
+			.text("Tweets/Sec");
+
+	// this triggers the browser to render
+	$('#tps-wrapper').append($graph);
+
+};
+
+var renderBatchSizeStats = function(data) {
+
+	data.forEach(function(d) {
+		console.log(d.batchSize, new Date(d.created))
+	})
+
+	// stop here if the data array is empty
+	if (data.length <= 0) return;
+
+	// if the graph of a gce instance already exists, remove it and
+	var $graph = $('#bss-wrapper .graph')
+
+
+	if ($graph.length > 0) {
+		// a graph has already been rendered before, so we will re-render only the svg
+		$graph.children('svg').remove()
+
+	} else {
+		$graph = $('<div class="graph">');
+		$graph.append('<span>Batch Size</span>');
+	}
+
+	var w = 900
+	var h = 300
+	var margin = { top: 10, bottom: 30, left: 25, right: 0}
+
+
+	var yScale = d3.scale.linear()
+		 .domain([100, 0])
+		 .range([margin.top, h - margin.top - margin.bottom]);
+
+	 // get max and min dates - this assumes data is sorted
+	var maxDate = new Date("max", data[0].created)
+	var minDate = new Date("min", data[data.length-1].created);
+
+	console.log(minDate)
+	console.log(maxDate)
+
+
+	var xScale = d3.time.scale()
+			.domain([maxDate, minDate])
+			.range([margin.left, w - margin.right]);
+
+
+	var yAxis = d3.svg.axis()
+			.scale(yScale)
+			.orient("left")
+			.tickFormat(d3.format("d"))
+			.innerTickSize(-w)
+			.outerTickSize(0)
+
+	var xAxis = d3.svg.axis()
+			.scale(xScale)
+			.orient('bottom')
+			.ticks(d3.time.days)
+			// .tickFormat(d3.time.format('%a %d'))
+			// .tickSize(0)
+			.tickPadding(8)
+			//.tickFormat(d3.time.format("%H:%M"))
+
+
+	//Create SVG element
+	var svg = d3.select($graph[0])
+				.append("svg")
+				.attr("width", w)
+				.attr("height", h)
+
+	var line = d3.svg.line()
+			.x(function(d) {
+				return xScale(new Date(d.created));
+			})
+			.y(function(d) {
+				return yScale(d.batchSize); });
+
+	// the line diagram
+	svg.append("path")
+			.datum(data)
+			.attr("class", "line")
+			.attr('transform', 'translate(10,0)')
+			.attr("d", line(data));
+
+	// x axis
+	svg.append('g')
+			.attr('class', 'x axis')
+			.attr('transform', 'translate(0, ' + (h - margin.top - margin.bottom) + ')')
+			.call(xAxis);
+
+	svg.append("g")
+			.attr("class", "y axis")
+			.attr('transform', 'translate(' +  margin.left + ',0)')
+			.call(yAxis)
+		.append("text")
+			.attr("transform", "rotate(-90)")
+			.attr("y", 6)
+			.attr("dy", ".71em")
+			.style("text-anchor", "end")
+			.text("Tweets/Sec");
+
+	// this triggers the browser to render
+	$('#bss-wrapper').append($graph);
+};
+
 
 var renderAvg = function(data, instanceName) {
+
+	// stop here if the data array is empty
+	if (data.length <= 0) return;
 
 	// if the graph of a gce instance already exists, remove it and
 	var $graph = $('#avg-wrapper .graph')

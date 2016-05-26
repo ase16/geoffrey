@@ -103,6 +103,8 @@
 }
 
 #nodes-wrapper .graph,
+#tps-wrapper .graph,
+#bss-wrapper .graph,
 #avg-wrapper .graph {
 	padding: 20px;
 	box-shadow: 0 0 3px #aaa;
@@ -111,6 +113,8 @@
 }
 
 #nodes-wrapper .graph span,
+#tps-wrapper .graph span,
+#bss-wrapper .graph span,
 #avg-wrapper .graph span  {
 	color: #aaa;
 	font-size: 14px;
