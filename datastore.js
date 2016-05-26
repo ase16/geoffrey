@@ -3,9 +3,9 @@
 const gcloud = require('gcloud');
 const config = require('config');
 
-let stats = config.get("stats");
-let JAZZ_STATS_PER_REQUEST = stats.jazzStatsPerRequest;
-let WILL_STATS_PER_REQUEST = stats.willStatsPerRequest;
+// let stats = config.get("stats");
+// let JAZZ_STATS_PER_REQUEST = stats.jazzStatsPerRequest;
+// let WILL_STATS_PER_REQUEST = stats.willStatsPerRequest;
 
 // Authenticating on a per-API-basis.
 let db;
@@ -84,17 +84,22 @@ var datastore = {
 			return callback("Datastore is not connected", []);
 		}
 
+    let oneHourAgo = new Date()
+    oneHourAgo.setMinutes( oneHourAgo.getMinutes() - 60)
+
 		var query = db
 			.createQuery('JazzStat')
 			.autoPaginate(false)
+      .filter('created', '>', oneHourAgo.getTime())
 			.order('created')
-			.limit(JAZZ_STATS_PER_REQUEST);				// --> https://googlecloudplatform.github.io/gcloud-node/#/docs/v0.32.0/datastore?method=createQuery
+			// .limit(JAZZ_STATS_PER_REQUEST);				// --> https://googlecloudplatform.github.io/gcloud-node/#/docs/v0.32.0/datastore?method=createQuery
 		db.runQuery(query, function(err, res) {
 			if (err) {
 				callback(err);
 				console.log(JSON.stringify(err, null, 2));
 			}
 			else {
+        console.log(res.map((r) => r.data));
 				callback(null, res.map((r) => r.data));
 			}
 		});												// --> https://googlecloudplatform.github.io/gcloud-node/#/docs/v0.32.0/datastore?method=runQuery
@@ -107,11 +112,15 @@ var datastore = {
 			return callback("Datastore is not connected", []);
 		}
 
+    let oneHourAgo = new Date()
+    oneHourAgo.setMinutes( oneHourAgo.getMinutes() - 60)
+
 		var query = db
 			.createQuery('WillStat')
 			.autoPaginate(false)
+      .filter('created', '>', oneHourAgo.getTime())
 			.order('created')
-			.limit(WILL_STATS_PER_REQUEST);				// --> https://googlecloudplatform.github.io/gcloud-node/#/docs/v0.32.0/datastore?method=createQuery
+			//.limit(WILL_STATS_PER_REQUEST);				// --> https://googlecloudplatform.github.io/gcloud-node/#/docs/v0.32.0/datastore?method=createQuery
 		db.runQuery(query, function(err, res) {
 			if (err) {
 				callback(err);

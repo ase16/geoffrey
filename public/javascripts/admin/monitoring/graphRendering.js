@@ -95,10 +95,6 @@ var renderSingleNode = function(data, instanceName) {
 
 var renderTweetsPerSecond = function(data) {
 
-	data.forEach(function(d) {
-		console.log(d.tweetsPerSec, new Date(d.created))
-	})
-
 	// stop here if the data array is empty
 	if (data.length <= 0) return;
 
@@ -125,12 +121,8 @@ var renderTweetsPerSecond = function(data) {
 		 .range([margin.top, h - margin.top - margin.bottom]);
 
 	 // get max and min dates - this assumes data is sorted
-	var maxDate = new Date("max", data[0].created)
-	var minDate = new Date("min", data[data.length-1].created);
-
-	console.log(minDate)
-	console.log(maxDate)
-
+	var maxDate = new Date(data[0].created)
+	var minDate = new Date(data[data.length-1].created);
 
 	var xScale = d3.time.scale()
 			.domain([maxDate, minDate])
@@ -147,7 +139,7 @@ var renderTweetsPerSecond = function(data) {
 	var xAxis = d3.svg.axis()
 			.scale(xScale)
 			.orient('bottom')
-			.ticks(d3.time.days)
+			.ticks(d3.time.mins, 15)
 			// .tickFormat(d3.time.format('%a %d'))
 			// .tickSize(0)
 			.tickPadding(8)
@@ -160,19 +152,23 @@ var renderTweetsPerSecond = function(data) {
 				.attr("width", w)
 				.attr("height", h)
 
-	var line = d3.svg.line()
-			.x(function(d) {
-				return xScale(new Date(d.created));
-			})
-			.y(function(d) {
-				return yScale(d.tweetsPerSec); });
+  var xMap = function(d) {
+		return xScale(new Date(d.created));
+	}
 
-	// the line diagram
-	svg.append("path")
-			.datum(data)
-			.attr("class", "line")
-			.attr('transform', 'translate(10,0)')
-			.attr("d", line(data));
+	var yMap = function(d) {
+		return yScale(d.tweetsPerSec);
+	}
+
+	// the dots
+	svg.selectAll(".dot")
+    .data(data)
+  .enter().append("circle")
+    .attr("class", "dot")
+    .attr("r", 2)
+    .attr("cx", xMap)
+    .attr("cy", yMap)
+    .style("fill", "black")
 
 	// x axis
 	svg.append('g')
@@ -192,15 +188,12 @@ var renderTweetsPerSecond = function(data) {
 			.text("Tweets/Sec");
 
 	// this triggers the browser to render
+	// tps stands for tweets per seconds
 	$('#tps-wrapper').append($graph);
 
 };
 
 var renderBatchSizeStats = function(data) {
-
-	data.forEach(function(d) {
-		console.log(d.batchSize, new Date(d.created))
-	})
 
 	// stop here if the data array is empty
 	if (data.length <= 0) return;
@@ -215,7 +208,7 @@ var renderBatchSizeStats = function(data) {
 
 	} else {
 		$graph = $('<div class="graph">');
-		$graph.append('<span>Batch Size</span>');
+		$graph.append('<span>Batch Jobs Size (#Tweets)</span>');
 	}
 
 	var w = 900
@@ -224,12 +217,12 @@ var renderBatchSizeStats = function(data) {
 
 
 	var yScale = d3.scale.linear()
-		 .domain([100, 0])
+		 .domain([1000, 0])
 		 .range([margin.top, h - margin.top - margin.bottom]);
 
 	 // get max and min dates - this assumes data is sorted
-	var maxDate = new Date("max", data[0].created)
-	var minDate = new Date("min", data[data.length-1].created);
+	var maxDate = new Date(data[0].created)
+	var minDate = new Date(data[data.length-1].created);
 
 	console.log(minDate)
 	console.log(maxDate)
@@ -250,7 +243,7 @@ var renderBatchSizeStats = function(data) {
 	var xAxis = d3.svg.axis()
 			.scale(xScale)
 			.orient('bottom')
-			.ticks(d3.time.days)
+			.ticks(d3.time.mins, 15)
 			// .tickFormat(d3.time.format('%a %d'))
 			// .tickSize(0)
 			.tickPadding(8)
@@ -263,19 +256,24 @@ var renderBatchSizeStats = function(data) {
 				.attr("width", w)
 				.attr("height", h)
 
-	var line = d3.svg.line()
-			.x(function(d) {
-				return xScale(new Date(d.created));
-			})
-			.y(function(d) {
-				return yScale(d.batchSize); });
 
-	// the line diagram
-	svg.append("path")
-			.datum(data)
-			.attr("class", "line")
-			.attr('transform', 'translate(10,0)')
-			.attr("d", line(data));
+  var xMap = function(d) {
+		return xScale(new Date(d.created));
+	}
+
+	var yMap = function(d) {
+		return yScale(d.batchSize);
+	}
+
+	// the dots
+	svg.selectAll(".dot")
+    .data(data)
+  .enter().append("circle")
+    .attr("class", "dot")
+    .attr("r", 2)
+    .attr("cx", xMap)
+    .attr("cy", yMap)
+    .style("fill", "black")
 
 	// x axis
 	svg.append('g')
