@@ -77,6 +77,7 @@ const toRFC33339 = (d) => JSON.parse(JSON.stringify(new Date(d)).replace('Z', '0
 
 var Monitoring = {
 
+
    /**
     * get the CPU Usage Time Series for multiple instances of an instance
     * group between a start- and end-time
@@ -87,7 +88,8 @@ var Monitoring = {
     */
     getCpuUsageTimeseries: function(startTime, endTime, callback) {
 
-      let dataPointsPerInstance = {}
+      const dataPointsPerInstance = {}
+      const output = {}
       const start = toRFC33339(startTime)
       const end = toRFC33339(endTime)
 
@@ -107,26 +109,56 @@ var Monitoring = {
               const instanceName = serie.metric.labels.instance_name
               const points = serie.points
 
-              // check if a series for a specific instance has already been added to the output object
+              // console.log("")
+              // console.log("")
+              // console.log("##########POINTS", instanceName)
+              // console.log(points)
+
+
               if (dataPointsPerInstance.hasOwnProperty(instanceName)) {
-
-                // if yes, check if it belongs to the front or the back of the array depending on its startTime
-                if (new Date(points[0].interval.startTime) >
-                    new Date(dataPointsPerInstance[instanceName][0].interval.startTime)) {
-
-                  dataPointsPerInstance[instanceName] =
-                      points.concat(dataPointsPerInstance[instanceName])
-                } else {
-                  dataPointsPerInstance[instanceName] =
-                      dataPointsPerInstance[instanceName].concat(points)
-                }
-
+                dataPointsPerInstance[instanceName].push(points)
               } else {
-                dataPointsPerInstance[instanceName] = points
-
+                dataPointsPerInstance[instanceName] = []
+                dataPointsPerInstance[instanceName].push(points)
               }
             })
 
+            Object.keys(dataPointsPerInstance).forEach((k) => {
+
+              if (dataPointsPerInstance[k].length == 1) {
+                output[k] = dataPointsPerInstance[k][0]
+              } else {
+
+                while (dataPointsPerInstance[k].length > 0) {
+
+                  let chunkWithSmallestStartDate = []
+                  let index;
+                  dataPointsPerInstance[k].forEach((chunk, i) => {
+
+                    if (chunkWithSmallestStartDate.length == 0 ||
+                      new Date(chunk[0].interval.startTime).getTime() < new Date(chunkWithSmallestStartDate[0].interval.startTime).getTime()) {
+
+                        chunkWithSmallestStartDate = chunk;
+                        index = i;
+                      }
+                  })
+
+                  if ( ! output.hasOwnProperty(k)) output[k] = []
+
+                  // console.log("CHUNK:")
+                  // console.log(chunkWithSmallestStartDate)
+
+                  output[k] = output[k].concat(chunkWithSmallestStartDate.reverse())
+
+                  // console.log("OUTPUT:")
+                  // console.log(output[k])
+
+                  dataPointsPerInstance[k].splice(index,1)
+                }
+
+                output[k] = output[k].reverse()
+              }
+            })
           }
           catch (err) {
             return callback(err)
@@ -152,7 +184,7 @@ var Monitoring = {
         else {
           //.. and now start fetching the data from google
           callAPIUntilNoNextTokensAvailable(authClient, null,  function(err) {
-            if (!err) callback(null, dataPointsPerInstance)
+            if (!err) callback(null, output)
             else callback(err)
           })
         }
@@ -181,119 +213,121 @@ var Monitoring = {
      },
 
 
+    /**
+     * get the CPU Usage Average of all provided metrics. The value-arrays
+     * need to be sorted by date (earliest at the end)!
+     * @param {FilteredMetrics} metrics (properties: node-name, value: array of metrics of this node)
+     * @param {Date} startTime - the earliest time of all metrices
+     * @param {requestCallback} callback - a function to be called when the server
+     *      responds to the request
+     */
+     addAvg: function(metrics, startTime) {
+
       /**
-       * get the CPU Usage Average of all provided metrics. The value-arrays
-       * need to be sorted by date (earliest at the end)!
-       * @param {FilteredMetrics} metrics (properties: node-name, value: array of metrics of this node)
-       * @param {Date} startTime - the earliest time of all metrices
-       * @param {requestCallback} callback - a function to be called when the server
-       *      responds to the request
+       * helper function to compare two dates. precision: minutes
+       * @param {Date} d1
+       * @param {Date} d2
+       * @return 1 if d1 > d2, 0 or -1
        */
-       addAvg: function(metrics, startTime) {
+       function compareDateByMinute(d1, d2) {
 
-        /**
-         * helper function to compare two dates. precision: minutes
-         * @param {Date} d1
-         * @param {Date} d2
-         * @return 1 if d1 > d2, 0 or -1
-         */
-         function compareDateByMinute(d1, d2) {
+         d1 = new Date(d1)
+         d2 = new Date(d2)
 
-           d1 = new Date(d1)
-           d2 = new Date(d2)
+         // ignore secs and ms for minute precision
+         d1.setSeconds(0)
+         d1.setMilliseconds(0)
+         d2.setSeconds(0)
+         d2.setMilliseconds(0)
 
-           // ignore secs and ms for minute precision
-           d1.setSeconds(0)
-           d1.setMilliseconds(0)
-           d2.setSeconds(0)
-           d2.setMilliseconds(0)
+         if (d1 > d2) return 1
+         if (d1.getTime() == d2.getTime()) return 0
 
-           if (d1 > d2) return 1
-           if (d1.getTime() == d2.getTime()) return 0
+         return -1
+       }
 
-           return -1
+
+       // we need to clone the object in order to not mutate the argument "metrics"
+       var result = JSON.parse(JSON.stringify(metrics));
+       // this is initially the same as the result object
+       // but its value-arrays elements will be spliced later in this function
+       var consumed = JSON.parse(JSON.stringify(metrics));
+
+
+       // the current date is 'bigger/later' than what we will compare to
+       let earliestDate = new Date()
+       let nodeWithEarliestDate = '';
+
+       // the latest date will be close to the endTime (closer to now),
+       // therefore latestDate will be 'later/bigger' than the startTime
+       let latestDate = new Date(startTime)
+
+       //  find the earliest and latest date
+       Object.keys(result).forEach((k) => {
+
+        //  console.log(result[k])
+
+         const ed = result[k][result[k].length-1].interval.startTime;
+         const ld = result[k][0].interval.startTime;
+
+         // find earliest
+         if (compareDateByMinute(ed, earliestDate) === -1) {
+           earliestDate = ed;
+           nodeWithEarliestDate = k;
          }
+         // find latest
+         if (compareDateByMinute(ld, latestDate) === 1) {
+           latestDate = ld;
+         }
+       })
 
+       // go from the earliest date to the latest date and for all timeseries
+       // average the cpu usage per minute
+       let currentDate = new Date(earliestDate);
+       const averageCpuUsage = [] // intermediary result array
 
-         // we need to clone the object in order to not mutate the argument "metrics"
-         var result = JSON.parse(JSON.stringify(metrics));
-         // this is initially the same as the result object
-         // but its value-arrays elements will be spliced later in this function
-         var consumed = JSON.parse(JSON.stringify(metrics));
+       while (compareDateByMinute(currentDate, latestDate) <= 0) {
 
+         let numMatches = 0;
+         let sumMatches = 0;
 
-         // the current date is 'bigger/later' than what we will compare to
-         let earliestDate = new Date()
-         let nodeWithEarliestDate = '';
+         Object.keys(consumed).forEach((k)=> {
 
-         // the latest date will be close to the endTime (closer to now),
-         // therefore latestDate will be 'later/bigger' than the startTime
-         let latestDate = new Date(startTime)
+           //check if array is already empty, if yes return
+           if (consumed[k].length == 0 ) return;
 
-         //  find the earliest and latest date
-         Object.keys(result).forEach((k) => {
+           const d = consumed[k][consumed[k].length-1].interval.startTime;
+           const v = consumed[k][consumed[k].length-1].value.doubleValue;
 
-           const ed = result[k][result[k].length-1].interval.startTime;
-           const ld = result[k][0].interval.startTime;
-
-           // find earliest
-           if (compareDateByMinute(ed, earliestDate) === -1) {
-             earliestDate = ed;
-             nodeWithEarliestDate = k;
-           }
-           // find latest
-           if (compareDateByMinute(ld, latestDate) === 1) {
-             latestDate = ld;
+           if (compareDateByMinute(currentDate, d) === 0 ){
+             numMatches++
+             sumMatches += v;
+             consumed[k].splice(consumed[k].length-1,1) // remove the earliest
            }
          })
 
-         // go from the earliest date to the latest date and for all timeseries
-         // average the cpu usage per minute
-         let currentDate = new Date(earliestDate);
-         const averageCpuUsage = [] // intermediary result array
+         // make a hard copy of the current Date
+         const st = new Date(currentDate)
+         let et = new Date(currentDate)
+         et = new Date(et.setMinutes(et.getMinutes() + 1))
+         const value = numMatches === 0 ? 0 : sumMatches / numMatches
+         averageCpuUsage.push({
+           interval: {
+             startTime: st,
+             endTime: et
+           },
+           value: {
+             doubleValue: value
+           }
+         })
 
-         while (compareDateByMinute(currentDate, latestDate) <= 0) {
-
-           let numMatches = 0;
-           let sumMatches = 0;
-
-           Object.keys(consumed).forEach((k)=> {
-
-             //check if array is already empty, if yes return
-             if (consumed[k].length == 0 ) return;
-
-             const d = consumed[k][consumed[k].length-1].interval.startTime;
-             const v = consumed[k][consumed[k].length-1].value.doubleValue;
-
-             if (compareDateByMinute(currentDate, d) === 0 ){
-               numMatches++
-               sumMatches += v;
-               consumed[k].splice(consumed[k].length-1,1) // remove the earliest
-             }
-           })
-
-           // make a hard copy of the current Date
-           const st = new Date(currentDate)
-           let et = new Date(currentDate)
-           et = new Date(et.setMinutes(et.getMinutes() + 1))
-           const value = numMatches === 0 ? 0 : sumMatches / numMatches
-           averageCpuUsage.push({
-             interval: {
-               startTime: st,
-               endTime: et
-             },
-             value: {
-               doubleValue: value
-             }
-           })
-
-           // increase the current date for the next loop
-           currentDate.setMinutes(currentDate.getMinutes() + 1)
-         }
-
-         result['avg'] = averageCpuUsage.reverse()
-         return result
+         // increase the current date for the next loop
+         currentDate.setMinutes(currentDate.getMinutes() + 1)
        }
+
+       result['avg'] = averageCpuUsage.reverse()
+       return result
+     }
  }
 
 

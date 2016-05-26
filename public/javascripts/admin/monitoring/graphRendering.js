@@ -1,5 +1,6 @@
 
 var renderSingleNode = function(data, instanceName) {
+	console.log(data)
 
 	// stop here if the data array is empty
 	if (data.length <= 0) return;

@@ -137,6 +137,9 @@ const updateWillStatsRecursively = function() {
       batchSizeStats = res;
     }
   })
+
+  // repeat this function over and over every 60 s
+  setTimeout(updateWillStatsRecursively, 60 * 1000)
 }
 
 const updateJazzStatsRecursively = function() {
@@ -146,6 +149,9 @@ const updateJazzStatsRecursively = function() {
         tweetsPerSecStats = res;
       }
     })
+
+    // repeat this function over and over every 60 s
+    setTimeout(updateJazzStatsRecursively, 60 * 1000)
 }
 
 const sockethandler = {

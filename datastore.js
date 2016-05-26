@@ -94,7 +94,6 @@ var datastore = {
 				console.log(JSON.stringify(err, null, 2));
 			}
 			else {
-        console.log(res.map((r) => r.data));
 				callback(null, res.map((r) => r.data));
 			}
 		});												// --> https://googlecloudplatform.github.io/gcloud-node/#/docs/v0.32.0/datastore?method=runQuery
