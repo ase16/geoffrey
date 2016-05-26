@@ -51,11 +51,6 @@ var datastore = {
     end.setSeconds(59)
     end.setMilliseconds(999)
 
-
-    console.log(start)
-    console.log(end)
-    console.log('sentiment_' + term)
-
     var query = db
         .createQuery('sentiment_' + term)
         //.autoPaginate(false)

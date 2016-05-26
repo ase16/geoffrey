@@ -208,7 +208,7 @@ var renderBatchSizeStats = function(data) {
 
 	} else {
 		$graph = $('<div class="graph">');
-		$graph.append('<span>Batch Jobs Size (#Tweets)</span>');
+		$graph.append('<span>Batch Jobs Size</span>');
 	}
 
 	var w = 900
@@ -290,12 +290,11 @@ var renderBatchSizeStats = function(data) {
 			.attr("y", 6)
 			.attr("dy", ".71em")
 			.style("text-anchor", "end")
-			.text("Tweets/Sec");
+			.text("#Tweets");
 
 	// this triggers the browser to render
 	$('#bss-wrapper').append($graph);
 };
-
 
 var renderAvg = function(data, instanceName) {
 

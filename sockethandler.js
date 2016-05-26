@@ -94,8 +94,6 @@ const sendToClientRecursively = function() {
   })
 
   openSockets.get('jazz').forEach((s) => {
-    console.log(s.id, " gets jazz update")
-    console.log(tweetsPerSecStats)
       s.emit('tweets-sec-stats', tweetsPerSecStats)
   })
 
