@@ -12,14 +12,15 @@ block content
 						.row
 							#avg-wrapper
 							#status-wrapper
-								span="enter node status in here (provisioning, running, stopped)"
+								#vms
 						#tps-wrapper
 						#nodes-wrapper
 							h3="Single Nodes"
-	
+	script.
+		var instanceGroupZone = 'asia-east1-a';
+		var instanceGroupName = 'jazz-nodes';
 	script(src='https://cdn.socket.io/socket.io-1.4.5.js')
 	script(src='//d3js.org/d3.v3.min.js')
 	script(src='./../../javascripts/admin/monitoring/graphRendering.js')
 	script(src='./../../javascripts/admin/monitoring/jazz.js')
-		
-	
+	script(src='./../../javascripts/admin/vms.js')

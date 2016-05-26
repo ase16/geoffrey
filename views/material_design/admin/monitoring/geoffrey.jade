@@ -12,13 +12,14 @@ block content
 						.row
 							#avg-wrapper
 							#status-wrapper
-								span="enter node status in here (provisioning, running, stopped)"
+								#vms
 						#nodes-wrapper
 							h3="Single Nodes"
-	
+	script.
+		var instanceGroupZone = 'us-central1-a';
+		var instanceGroupName = 'geoffrey-nodes';
 	script(src='https://cdn.socket.io/socket.io-1.4.5.js')
 	script(src='//d3js.org/d3.v3.min.js')
 	script(src='./../../javascripts/admin/monitoring/graphRendering.js')
 	script(src='./../../javascripts/admin/monitoring/geoffrey.js')
-		
-	
+	script(src='./../../javascripts/admin/vms.js')

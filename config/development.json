@@ -1,8 +1,6 @@
 {
     "gcloud": {
-        "projectId": "",
-        "keyFilename": "",
-        "zone": ""
+        "projectId": "ase16-1255"
     },
 
     "log": {

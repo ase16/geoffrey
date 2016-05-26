@@ -12,14 +12,15 @@ block content
 						.row
 							#avg-wrapper
 							#status-wrapper
-								span="enter node status in here (provisioning, running, stopped)"
+								#vms
 						#bss-wrapper
 						#nodes-wrapper
 							h3="Single Nodes"
-	
+	script.
+		var instanceGroupZone = 'europe-west1-d';
+		var instanceGroupName = 'will-nodes';
 	script(src='https://cdn.socket.io/socket.io-1.4.5.js')
 	script(src='//d3js.org/d3.v3.min.js')
 	script(src='./../../javascripts/admin/monitoring/graphRendering.js')
 	script(src='./../../javascripts/admin/monitoring/will.js')
-		
-	
+	script(src='./../../javascripts/admin/vms.js')

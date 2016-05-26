@@ -7,15 +7,13 @@ var vms = {
 	read: function(req, callback) {
 
 		// ToDo: Make sure all necessary params exist and are what they should be
-		console.log("GET /admin/vms ==> READ");
+		console.log("GET /admin/vms ==> READ, req.query = ", req.query);
 
 		var cgeConfig = config.get("gcloud");
 		var cloud = require('./../../cloud.js')(cgeConfig, function(err) {
 			if (!err) {
-				// cloud.listInstances(function(err, res) {
-				cloud.listWorkerInstances(function(err, res) {
+				cloud.listWorkerInstances(req.query.instanceGroupZone, req.query.instanceGroupName, function(err, res) {
 					if (!err) {
-						// return callback(null, res.items);
 						return callback(null, res.managedInstances);
 					}
 					else {
