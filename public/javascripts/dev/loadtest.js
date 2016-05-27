@@ -1,7 +1,7 @@
 (function() {
 	"use strict";
 
-	var REQUEST_INTERVAL = 0.5;
+	var REQUEST_INTERVAL = 1;
 
 	var loadtest;
 	var loadtestStartButton = '<button class="mdl-button mdl-js-button mdl-button--raised mdl-button--colored loadtestStartButton" name="loadtestStart">Start Loadtest</button>';
