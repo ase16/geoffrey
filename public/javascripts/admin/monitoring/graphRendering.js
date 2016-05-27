@@ -194,7 +194,14 @@ var renderTweetsPerSecond = function(data) {
 
 };
 
+
+var assignedColorForWillNode = {}
+var unassignedColors = ['red', 'grey', 'orange', 'aqua', 'purple', 'green', 'blue']
+var activeWillNodes = []
+
 var renderBatchSizeStats = function(data) {
+
+
 
 	// stop here if the data array is empty
 	if (data.length <= 0) return;
@@ -224,10 +231,6 @@ var renderBatchSizeStats = function(data) {
 	 // get max and min dates - this assumes data is sorted
 	var maxDate = new Date(data[0].created)
 	var minDate = new Date(data[data.length-1].created);
-
-	console.log(minDate)
-	console.log(maxDate)
-
 
 	var xScale = d3.time.scale()
 			.domain([maxDate, minDate])
@@ -274,7 +277,7 @@ var renderBatchSizeStats = function(data) {
     .attr("r", 2)
     .attr("cx", xMap)
     .attr("cy", yMap)
-    .style("fill", "black")
+    .style("fill", assignColor)
 
 	// x axis
 	svg.append('g')
@@ -295,7 +298,47 @@ var renderBatchSizeStats = function(data) {
 
 	// this triggers the browser to render
 	$('#bss-wrapper').append($graph);
+
+	//unassignUnusedColors()
+
+	$('.color-legend').remove()
+
+
+	Object.keys(assignedColorForWillNode).forEach(function(k) {
+		var colorBlock = $('<div>').css('background-color', assignedColorForWillNode[k])
+		var legend = $('<span>' + k + '</span>')
+		var colorWrapper = $('<div>').addClass('color-legend')
+		colorWrapper.append(colorBlock).append(legend);
+		$('#bss-wrapper').append(colorWrapper)
+	})
 };
+
+
+var assignColor = function(d) {
+
+	if (! d.hasOwnProperty('vmName')) return 'black';
+
+	if (assignedColorForWillNode.hasOwnProperty(d.vmName)) {
+		return assignedColorForWillNode[d.vmName]
+	} else {
+		var newColor = unassignedColors.pop();
+		console.log(newColor)
+		assignedColorForWillNode[d.vmName] = newColor;
+		activeWillNodes.push(d.vmName)
+		return newColor;
+	}
+}
+
+// var unassignUnusedColors = function() {
+// 	Object.keys(assignedColorForWillNode).forEach(function(k) {
+// 		console.log(activeWillNodes, k)
+// 		if (activeWillNodes.indexOf(k) == -1) {
+// 			unassignedColors.push(assignedColorForWillNode[k]);
+// 			delete assignedColorForWillNode[k];
+// 		}
+// 	})
+// 	activeWillNodes = []
+// }
 
 var renderAvg = function(data, instanceName) {
 
