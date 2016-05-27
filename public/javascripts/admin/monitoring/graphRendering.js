@@ -112,7 +112,7 @@ var renderTweetsPerSecond = function(data) {
 		$graph.append('<span>Twitter Streaming: Tweets per Second</span>');
 	}
 
-	var w = 750
+	var w = 650
 	var h = 300
 	var margin = { top: 10, bottom: 30, left: 25, right: 10}
 
@@ -216,7 +216,7 @@ var renderBatchSizeStats = function(data) {
 		$graph.append('<span>Batch Jobs Size</span>');
 	}
 
-	var w = 750
+	var w = 650
 	var h = 300
 	var margin = { top: 10, bottom: 30, left: 35, right: 10}
 
