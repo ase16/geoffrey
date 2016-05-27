@@ -9,13 +9,14 @@ block content
 						h2.mdl-card__title-text=title
 					.mdl-card__actions.mdl-card--border
 					.mdl-card__supporting-text
-						.row
-							#avg-wrapper
-							#status-wrapper
-								#vms
+						#loadtest
+						#status-wrapper
+							#vms
+						#avg-wrapper
 						#nodes-wrapper
 							h3="Single Nodes"
 	script.
+		var loadtestPath = '/dev/loadtest';
 		var instanceGroupZone = 'us-central1-a';
 		var instanceGroupName = 'geoffrey-nodes';
 	script(src='https://cdn.socket.io/socket.io-1.4.5.js')
@@ -23,3 +24,4 @@ block content
 	script(src='./../../javascripts/admin/monitoring/graphRendering.js')
 	script(src='./../../javascripts/admin/monitoring/geoffrey.js')
 	script(src='./../../javascripts/admin/vms.js')
+	script(src='./../../javascripts/dev/loadtest.js')

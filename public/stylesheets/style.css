@@ -88,15 +88,6 @@
 	align-items: center;
 }
 
-#status-wrapper {
-	color: black;
-	height: 340px;
-	padding: 20px;
-	box-shadow: 0 0 3px #aaa;
-	display: inline-block;
-	margin: 10px;
-}
-
 #nodes-wrapper > div {
 	padding-bottom: 20px;
 	border-bottom: 1px solid #ccc;
@@ -220,3 +211,34 @@ span.displayVM, span.displayVMState {
 .mdl-mini-footer {
 	padding: 0px 16px;
 }
+
+
+
+/* START: Styling for listing vms and their state */
+.mdl-card__supporting-text {
+	width: auto;
+}
+
+#status-wrapper {
+	color: black;
+	padding: 20px;
+	box-shadow: 0 0 3px #aaa;
+	margin: 10px;
+}
+
+.mdl-button.mdl-button--colored.loadtestStartButton {
+	margin-bottom: 17px;
+	background-color: rgb(104, 159, 56); /* rgb(104, 159, 56); */
+}
+.mdl-button.mdl-button--colored.loadtestStopButton {
+	margin-bottom: 17px;
+	display: none;
+	background-color: rgb(244, 67, 54); /* rgb(211, 47, 47); */
+}
+
+ul.vms {
+	margin: 0px;
+	padding: 0px;
+	list-style-type: none;
+}
+/* END: Styling for listing vms and their state */
