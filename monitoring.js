@@ -88,7 +88,7 @@ var Monitoring = {
     */
     getCpuUsageTimeseries: function(startTime, endTime, callback) {
 
-      const dataPointsPerInstance = {}
+      const ptsPerInstance = {}
       const output = {}
       const start = toRFC33339(startTime)
       const end = toRFC33339(endTime)
@@ -114,46 +114,53 @@ var Monitoring = {
               // console.log("##########POINTS", instanceName)
               // console.log(points)
 
-
-              if (dataPointsPerInstance.hasOwnProperty(instanceName)) {
-                dataPointsPerInstance[instanceName].push(points)
+              // add all timeseries measure points with the same instance name in the same bucket
+              if (ptsPerInstance.hasOwnProperty(instanceName)) {
+                ptsPerInstance[instanceName].push(points)
               } else {
-                dataPointsPerInstance[instanceName] = []
-                dataPointsPerInstance[instanceName].push(points)
+                ptsPerInstance[instanceName] = []
+                ptsPerInstance[instanceName].push(points)
               }
             })
 
-            Object.keys(dataPointsPerInstance).forEach((k) => {
+            // for all instance(-names)
+            Object.keys(ptsPerInstance).forEach((k) => {
 
-              if (dataPointsPerInstance[k].length == 1) {
-                output[k] = dataPointsPerInstance[k][0]
+              if (ptsPerInstance[k].length == 1) {
+                output[k] = ptsPerInstance[k][0]
               } else {
 
-                while (dataPointsPerInstance[k].length > 0) {
+                // loop as long as we have chunks/time-series available
+                while (ptsPerInstance[k].length > 0) {
 
-                  let chunkWithSmallestStartDate = []
-                  let index;
-                  dataPointsPerInstance[k].forEach((chunk, i) => {
+                  // find the chunk (timeserie-points) with the smalles startTime
+                  let smallestSTchunk = []
+                  let index; // index of chunk with smallest start date
+                  ptsPerInstance[k].forEach((chunk, i) => {
 
-                    if (chunkWithSmallestStartDate.length == 0 ||
-                      new Date(chunk[0].interval.startTime).getTime() < new Date(chunkWithSmallestStartDate[0].interval.startTime).getTime()) {
+                    if (smallestSTchunk.length == 0 ||
+                      new Date(chunk[0].interval.startTime).getTime()
+                      < new Date(smallestSTchunk[0].interval.startTime).getTime()) {
 
-                        chunkWithSmallestStartDate = chunk;
+                        smallestSTchunk = chunk;
                         index = i;
                       }
                   })
 
+                  // only in the first loop
                   if ( ! output.hasOwnProperty(k)) output[k] = []
 
                   // console.log("CHUNK:")
-                  // console.log(chunkWithSmallestStartDate)
+                  // console.log(smallestSTchunk)
 
-                  output[k] = output[k].concat(chunkWithSmallestStartDate.reverse())
+                  // add to the output by concatinating all chunks together
+                  output[k] = output[k].concat(smallestSTchunk.reverse())
 
                   // console.log("OUTPUT:")
                   // console.log(output[k])
 
-                  dataPointsPerInstance[k].splice(index,1)
+                  // this will make the while loop stop eventually
+                  ptsPerInstance[k].splice(index,1)
                 }
 
                 output[k] = output[k].reverse()
@@ -230,43 +237,43 @@ var Monitoring = {
        // we need to clone the object in order to not mutate the argument "metrics"
        var cloned = JSON.parse(JSON.stringify(metrics));
 
+       // go through all instance-name timeseries arrays
        Object.keys(cloned).forEach((k) => {
 
-         const nullObject = {
+         const protoEmpty = {
            interval: {
              startTime: null,
              endTime: null,
            },
-           value: {
-             doubleValue: 0
-           }
+           value: { doubleValue: 0 }
          }
 
-
+         // fill up the front of the array with empty objects representing the
+         // last few minutes until "endTime - padding" (if needed)
          while (new Date(cloned[k][0].interval.startTime) < endTimeWithPadding) {
 
-           const nullCloned = JSON.parse(JSON.stringify(nullObject));
+           const emptyClone = JSON.parse(JSON.stringify(protoEmpty));
            const oldEndTime = new Date(cloned[k][0].interval.endTime)
            const oneMinuteAfter = new Date(oldEndTime).setMinutes(oldEndTime.getMinutes() + 1)
-           nullCloned.interval.endTime = oneMinuteAfter
-           nullCloned.interval.startTime = oldEndTime
+           emptyClone.interval.endTime = oneMinuteAfter
+           emptyClone.interval.startTime = oldEndTime
 
-           cloned[k].unshift(nullCloned)
+           cloned[k].unshift(emptyClone)
          }
 
+         // fill up the front of the array with empty objects representing the
+         // first few minutes from "startTime + padding" (if neededs)
          while (new Date(cloned[k][cloned[k].length -1].interval.endTime) > startTimeWithPadding) {
 
-           const nullCloned = JSON.parse(JSON.stringify(nullObject));
+           const emptyClone = JSON.parse(JSON.stringify(protoEmpty));
            const oldStartTime = new Date(cloned[k][cloned[k].length - 1].interval.startTime)
            const oneMinuteBefore = new Date(oldStartTime).setMinutes(oldStartTime.getMinutes() - 1)
-           nullCloned.interval.endTime = oldStartTime
-           nullCloned.interval.startTime = oneMinuteBefore
+           emptyClone.interval.endTime = oldStartTime
+           emptyClone.interval.startTime = oneMinuteBefore
 
-           cloned[k].push(nullCloned)
-
+           cloned[k].push(emptyClone)
          }
        })
-
 
       return cloned
     },

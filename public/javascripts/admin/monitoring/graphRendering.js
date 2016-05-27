@@ -20,7 +20,7 @@ var renderSingleNode = function(data, instanceName) {
 
 	var w = 220
 	var h = 150
-	var margin = { top: 10, bottom: 30, left: 15, right: 5}
+	var margin = { top: 10, bottom: 30, left: 15, right: 10}
 
 	var yScale = d3.scale.linear()
 		 .domain([100, 0])
@@ -32,7 +32,7 @@ var renderSingleNode = function(data, instanceName) {
 
 	var xScale = d3.time.scale()
 			.domain([maxDate, minDate])
-			.range([margin.left, w - margin.right]);
+			.range([margin.left, w]);
 
 
 	var yAxis = d3.svg.axis()
@@ -356,7 +356,7 @@ var renderAvg = function(data, instanceName) {
 
 	var w = 400
 	var h = 300
-	var margin = { top: 10, bottom: 30, left: 25, right: 0}
+	var margin = { top: 10, bottom: 30, left: 25, right: 10}
 
 	var yScale = d3.scale.linear()
 		 .domain([100, 0])
@@ -368,7 +368,7 @@ var renderAvg = function(data, instanceName) {
 
 	var xScale = d3.time.scale()
 			.domain([maxDate, minDate])
-			.range([margin.left, w - margin.right]);
+			.range([margin.left, w]);
 
 
 	var yAxis = d3.svg.axis()
