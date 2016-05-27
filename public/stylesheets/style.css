@@ -209,6 +209,8 @@ span.displayVM, span.displayVMState {
 }
 
 .mdl-mini-footer {
+	color: white;
+	background-color: transparent;
 	padding: 0px 16px;
 }
 

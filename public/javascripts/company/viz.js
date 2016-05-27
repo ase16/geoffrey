@@ -163,7 +163,7 @@ var render = function(data, term) {
 	    // .tickFormat(d3.time.format('%a %d'))
 	    // .tickSize(0)
 	    .tickPadding(8)
-			.tickFormat(d3.time.format("%H"))
+			.tickFormat(d3.time.format("%H:%M"))
 
 
 	//Create SVG element
@@ -171,7 +171,6 @@ var render = function(data, term) {
 				.append("svg")
 				.attr("width", w)
 				.attr("height", h);
-
 
 
 	// the bar chart

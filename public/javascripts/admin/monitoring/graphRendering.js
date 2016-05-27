@@ -112,9 +112,9 @@ var renderTweetsPerSecond = function(data) {
 		$graph.append('<span>Twitter Streaming: Tweets per Second</span>');
 	}
 
-	var w = 900
+	var w = 750
 	var h = 300
-	var margin = { top: 10, bottom: 30, left: 25, right: 0}
+	var margin = { top: 10, bottom: 30, left: 25, right: 10}
 
 
 	var yScale = d3.scale.linear()
@@ -144,7 +144,7 @@ var renderTweetsPerSecond = function(data) {
 			// .tickFormat(d3.time.format('%a %d'))
 			// .tickSize(0)
 			.tickPadding(8)
-			//.tickFormat(d3.time.format("%H:%M"))
+			.tickFormat(d3.time.format("%H:%M"))
 
 
 	//Create SVG element
@@ -202,7 +202,6 @@ var activeWillNodes = []
 var renderBatchSizeStats = function(data) {
 
 
-
 	// stop here if the data array is empty
 	if (data.length <= 0) return;
 
@@ -219,9 +218,9 @@ var renderBatchSizeStats = function(data) {
 		$graph.append('<span>Batch Jobs Size</span>');
 	}
 
-	var w = 900
+	var w = 750
 	var h = 300
-	var margin = { top: 10, bottom: 30, left: 25, right: 0}
+	var margin = { top: 10, bottom: 30, left: 35, right: 10}
 
 
 	var yScale = d3.scale.linear()
@@ -248,10 +247,9 @@ var renderBatchSizeStats = function(data) {
 			.scale(xScale)
 			.orient('bottom')
 			.ticks(d3.time.mins, 15)
-			// .tickFormat(d3.time.format('%a %d'))
 			// .tickSize(0)
 			.tickPadding(8)
-			//.tickFormat(d3.time.format("%H:%M"))
+			.tickFormat(d3.time.format("%H:%M"))
 
 
 	//Create SVG element
