@@ -27,11 +27,13 @@ Navigate in the google cloud platform console to *Compute Engine* > *Instance Te
 6. **Firewall** > Only for *"geoffrey-template"* and *"carlton-template"* make a tick for *"Allow HTTP traffic"*
 7. Extend options by clicking on **Management, disk, networking, SSH keys**
 8. **Startup script** > Depending on the template you create currently, copy paste the corresponding line
-```curl https://raw.githubusercontent.com/ase16/setup-scripts/master/geoffrey/gcloud-startup-script.sh | bash -```
-```curl https://raw.githubusercontent.com/ase16/setup-scripts/master/carlton/gcloud-startup-script.sh | bash -```
-```curl https://raw.githubusercontent.com/ase16/setup-scripts/master/jazz/gcloud-startup-script.sh | bash -```
-```curl https://raw.githubusercontent.com/ase16/setup-scripts/master/will/gcloud-startup-script.sh | bash -```
-```curl https://raw.githubusercontent.com/ase16/setup-scripts/master/phil/gcloud-startup-script.sh | bash -```
+```bash
+curl https://raw.githubusercontent.com/ase16/setup-scripts/master/geoffrey/gcloud-startup-script.sh | bash -
+curl https://raw.githubusercontent.com/ase16/setup-scripts/master/carlton/gcloud-startup-script.sh | bash -
+curl https://raw.githubusercontent.com/ase16/setup-scripts/master/jazz/gcloud-startup-script.sh | bash -
+curl https://raw.githubusercontent.com/ase16/setup-scripts/master/will/gcloud-startup-script.sh | bash -
+curl https://raw.githubusercontent.com/ase16/setup-scripts/master/phil/gcloud-startup-script.sh | bash -
+```
 
 ### 2) Creating instance groups
 
@@ -40,11 +42,13 @@ Navigate in the google cloud platform console to *Compute Engine* > *Instance gr
 1. Click on **CREATE INSTANCE GROUP**
 2. **Name** > Name it according to the component followed by "-nodes", e.g. for Geoffrey write for Name = *"geoffrey-nodes"*
 3. **Zone** > If you only have a free trial account, you must ensure that you choose for each instance group a different region (except phil and jazz, they can be on the same), e.g. as follows:
-   `geoffrey = europe-west1-d`
-   `carlton = us-east1-d`
-   `jazz = us-central1-a`
-   `will = asia-east1-a`
-   `phil = us-central1-a`
+```
+geoffrey-nodes = europe-west1-d
+carlton-nodes = us-east1-d
+jazz-nodes = us-central1-a
+will-nodes = asia-east1-a
+phil-nodes = us-central1-a
+```
    **REALLY IMPORTANT: Choose real different regions, not just "europe-west1-d", "europe-west1-c", "europe-west1-b" etc. for the different components**
 4. **Instance template** > Choose the appropriate instance template for the current instance group you create.
 5. **Autoscaling** > Only *"geoffrey-nodes"* and *"carlton-nodes"* make use of google predefined auto-scalers. For both of them choose for *Autoscale based on* *"CPU usage"* and as Maximum number of instances choose 8
@@ -101,7 +105,7 @@ Navigate in the google cloud platform console to *Compute Engine* > *Metadata*. 
 
 * For **proxy.carlton** makes sure you use the ip that was created for the **carlton-load-balancer**
 
-```javascript
+```json
 {
     "gcloud": {
         "projectId": "ase16-1255"
@@ -130,7 +134,7 @@ Navigate in the google cloud platform console to *Compute Engine* > *Metadata*. 
 ```
 
 **carlton-config-production**
-```javascript
+```json
 {
     "gcloud": {
         "projectId": "ase16-1255"
@@ -147,7 +151,7 @@ Navigate in the google cloud platform console to *Compute Engine* > *Metadata*. 
 * For **twitter** use your corresponding twitter credentials from your twitter-account
 * For **will.instanceGroupZone** provide the correct zone, e.g. *"asia-east1-a"*
 
-```javascript
+```json
 {
     "twitter": {
         "consumer_key": "",
@@ -185,7 +189,7 @@ Navigate in the google cloud platform console to *Compute Engine* > *Metadata*. 
 ```
 
 **will-config-production**
-```javascript
+```json
 {
     "gcloud": {
         "projectId": "ase16-1255"
@@ -212,7 +216,7 @@ Navigate in the google cloud platform console to *Compute Engine* > *Metadata*. 
 
 * For **will.instanceGroupZone** provide the correct zone, e.g. *"asia-east1-a"*
 
-```javascript
+```json
 {
     "gcloud": {
         "projectId": "ase16-1255"
@@ -240,14 +244,36 @@ Navigate in the google cloud platform console to *Compute Engine* > *Metadata*. 
 
 **env-stormpath**
 
-```javascript
-Copy paste the content of the stormpath-credentials.txt you got via mail here>
+```
+Copy paste the content of the stormpath-credentials.txt you got via mail here
 ```
 
 
 
+## Distinction between admins and companies
+The first screen is the login screen, where you also have the possibility to register and use some
+other account features.
+Be aware that if you register yourself with the email address that we use for our email
+communication, that you are registered as an **admin** user.
+With every other email address you'll be registered as a **company** user.
 
-## Local Installation & Set Up
+## Navigation Structure of the app
+* NotLoggedIn
+    - `/` Login screen
+    - `/register` Register screen
+* Logged in as company user
+    - `/company/main` Some welcome/starting/overview screen for the company user
+    - `/company/term-management` Screen to list, create and delete terms
+    - `/company/viz` Screen to visualize sentiment analysis of multiple terms
+* Logged in as admin user
+    - `/admin/main` Some welcome/starting/overview screen for the admin user
+    - `/admin/monitoring/geoffrey` Screen to give info about the instance group *"geoffrey-nodes"*
+    - `/admin/monitoring/carlton` Screen to give info about the instance group *"carlton-nodes"*
+    - `/admin/monitoring/jazz` Screen to give info about the instance group *"jazz-nodes"*
+    - `/admin/monitoring/will` Screen to give info about the instance group *"will-nodes"*
+
+
+## Local Installation & Set Up (a bit outdated)
 * Clone/fetch/pull the current version of the repository and run `npm install`.
 * Grab the `.env.stormpath` file from our shared google docs folder and drop it into the project's
 root folder.
@@ -258,22 +284,3 @@ root folder.
 * Make sure you have mongo running on your machinge, e.g. with a statment like `mongod --dbpath="path/to/data/directory"`
 * **Do not forget to run `node app` in the carlton project, to ensure that the term-management backend is up and running!!!**
 * Finally run `node app` in your geoffrey project.
-
-## Distinction between admins and companies
-The first screen is the login screen, where you also have the possibility to register and use some
-other account features.
-Be aware that if you register yourself with the email address that we use for our email
-communication, that you are registered as an **admin** user.
-With every other email address you'll be registered as a **company** user.
-
-## Visible navigation Structure of the app
-* NotLoggedIn
-    - `/` Login screen
-    - `/register` Register screen
-* Logged in as company user
-    - `/company/main` Some welcome/starting/overview screen for the company user
-    - `/company/term-management` Screen to list, create and delete terms
-    - `/company/viz` Screen to visualize sentiment analysis of multiple terms
-* Logged in as admin user
-    - `/admin/main` Some welcome/starting/overview screen for the admin user
-
