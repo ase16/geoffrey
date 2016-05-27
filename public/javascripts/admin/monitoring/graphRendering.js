@@ -141,8 +141,6 @@ var renderTweetsPerSecond = function(data) {
 			.scale(xScale)
 			.orient('bottom')
 			.ticks(d3.time.mins, 15)
-			// .tickFormat(d3.time.format('%a %d'))
-			// .tickSize(0)
 			.tickPadding(8)
 			.tickFormat(d3.time.format("%H:%M"))
 
@@ -196,7 +194,7 @@ var renderTweetsPerSecond = function(data) {
 
 
 var assignedColorForWillNode = {}
-var unassignedColors = ['red', 'grey', 'orange', 'aqua', 'purple', 'green', 'blue']
+var unassignedColors = ['olive', 'red', 'grey', 'brown','yellow', 'darkgreen', 'pink', 'orange', 'aqua', 'purple', 'green', 'blue']
 var activeWillNodes = []
 
 var renderBatchSizeStats = function(data) {

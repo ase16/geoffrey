@@ -136,7 +136,7 @@ line, path {
 	fill: none;
 }
 
-g.tick line {
+g.y.axis g.tick line {
 	stroke: #ccc;
 	stroke-dasharray: 2,2;
 }
