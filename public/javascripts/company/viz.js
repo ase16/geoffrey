@@ -6,10 +6,10 @@ var DateInputFields = (function($) {
 
 	var init = function() {
 		var dateSelected = $('<span class="date-selected">')
-		var next = $('<span class="next-day">').text('>').on('click',nextDay)
-		var prev = $('<span class="prev-day">').text('<').on('click', prevDay)
+		var next = $('<span class="mdl-button mdl-js-button mdl-button--fab mdl-button--mini-fab mdl-button--colored">').html('<i class="material-icons">add</i>').on('click',nextDay)
+		var prev = $('<span class="mdl-button mdl-js-button mdl-button--fab mdl-button--mini-fab mdl-button--colored">').html('<i class="material-icons">remove</i>').on('click', prevDay)
 
-		$('#date-wrapper')
+		$('#date-wrapper').hide()
 			.append(prev)
 			.append(dateSelected)
 			.append(next)
@@ -33,8 +33,13 @@ var DateInputFields = (function($) {
 		if (term != "" && term != undefined) getData()
 	}
 
+	var showDate = function() {
+		$('#date-wrapper').show()
+	}
+
 	return {
-		init: init
+		init: init,
+		show: showDate
 	}
 }(jQuery))
 
@@ -55,8 +60,11 @@ function getTerms() {
 
 			res.terms.forEach(function(t) {
 
-				var elem = $('<div>').text(t).click(function() {
+				var elem = $('<div>').addClass('mdl-tabs__tab').text(t).click(function() {
 					term = t
+					DateInputFields.show()
+					$('.mdl-tabs__tab').removeClass('is-active')
+					$(this).addClass('is-active')
 					getData(t);
 				})
 

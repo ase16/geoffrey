@@ -199,33 +199,18 @@ span.displayVM, span.displayVMState {
 	height: 300px;
 }
 
-#terms-wrapper {
-	display: flex;
-	flex-direction: row;
-	align-items: center;
-}
-
 #date-wrapper {
 	padding: 20px 0;
 }
 
-#date-wrapper span {
-	padding-right: 20px;
-	font-size: 30px;
+#date-wrapper .date-selected {
+	padding: 40px;
 	color: black;
-}
-
-#terms-wrapper > div {
-	padding: 10px;
-	border: 1px solid black;
-	margin-right: 5px;
 }
 
 .mdl-mini-footer {
 	padding: 0px 16px;
 }
-
-
 
 /* START: Styling for listing vms and their state */
 .mdl-card__supporting-text {
