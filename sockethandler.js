@@ -118,8 +118,10 @@ const updateCpuMetricsRecursively = function() {
       cpuMetrics.forEach((oldMetrics, key) => {
         // filter all "geoffrey" or "carlton" or .... nodes
         const filtered = monitoring.filter(newMetrics, key)
+        // add up empty empty minute-slots between the start and end date
+        const filledUp = monitoring.fillEmptySlots(filtered, startTime, endTime, 5)
         // compute average cpu load
-        const withAverage = monitoring.addAvg(filtered, startTime)
+        const withAverage = monitoring.addAvg(filledUp, startTime)
         // update the map entry
         cpuMetrics.set(key, withAverage)
       })

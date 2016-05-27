@@ -212,6 +212,65 @@ var Monitoring = {
       return cloned
      },
 
+     /**
+      * fill up the full hour with 0-values
+      * (e.g. when an instance ran for only 20 minutes during the last hour,
+      * fill the remaining minutes with 0's)
+      * @param {TimeSeries} metrics - received from the google api call
+      * @param {Date} startTime
+      * @param {Date} endTime
+      * @param {Number} padding - to ignore first and last few minutes
+      * @return timeseries with at least ( minutes(endTime-startTime) - 2 * padding ) entries
+      */
+     fillEmptySlots: function(metrics, startTime, endTime, padding) {
+
+       const startTimeWithPadding = new Date(startTime).setMinutes(new Date(startTime).getMinutes() + 5)
+       const endTimeWithPadding = new Date(endTime).setMinutes(new Date(endTime).getMinutes() - 5)
+
+       // we need to clone the object in order to not mutate the argument "metrics"
+       var cloned = JSON.parse(JSON.stringify(metrics));
+
+       Object.keys(cloned).forEach((k) => {
+
+         const nullObject = {
+           interval: {
+             startTime: null,
+             endTime: null,
+           },
+           value: {
+             doubleValue: 0
+           }
+         }
+
+
+         while (new Date(cloned[k][0].interval.startTime) < endTimeWithPadding) {
+
+           const nullCloned = JSON.parse(JSON.stringify(nullObject));
+           const oldEndTime = new Date(cloned[k][0].interval.endTime)
+           const oneMinuteAfter = new Date(oldEndTime).setMinutes(oldEndTime.getMinutes() + 1)
+           nullCloned.interval.endTime = oneMinuteAfter
+           nullCloned.interval.startTime = oldEndTime
+
+           cloned[k].unshift(nullCloned)
+         }
+
+         while (new Date(cloned[k][cloned[k].length -1].interval.endTime) > startTimeWithPadding) {
+
+           const nullCloned = JSON.parse(JSON.stringify(nullObject));
+           const oldStartTime = new Date(cloned[k][cloned[k].length - 1].interval.startTime)
+           const oneMinuteBefore = new Date(oldStartTime).setMinutes(oldStartTime.getMinutes() - 1)
+           nullCloned.interval.endTime = oldStartTime
+           nullCloned.interval.startTime = oneMinuteBefore
+
+           cloned[k].push(nullCloned)
+
+         }
+       })
+
+
+      return cloned
+    },
+
 
     /**
      * get the CPU Usage Average of all provided metrics. The value-arrays
