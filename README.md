@@ -264,7 +264,7 @@ With every other email address you'll be registered as a **company** user.
 * Logged in as company user
     - `/company/main` Some welcome/starting/overview screen for the company user
     - `/company/term-management` Screen to list, create and delete terms
-    - `/company/viz` Screen to visualize sentiment analysis of multiple terms
+    - `/company/viz` Screen to visualize sentiment analysis of registered terms
 * Logged in as admin user
     - `/admin/main` Some welcome/starting/overview screen for the admin user
     - `/admin/monitoring/geoffrey` Screen to give info about the instance group *"geoffrey-nodes"*
