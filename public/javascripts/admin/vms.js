@@ -42,10 +42,10 @@
 				var vm = vms[i];
 				var vmOptimisticUI = '';
 				var vmInstanceStatus = (vm.hasOwnProperty('instanceStatus') ? vm.instanceStatus : vm.currentAction);
-				console.log('VM status is = ', vmInstanceStatus);
+				// console.log('VM status is = ', vmInstanceStatus);
 				if (vmInstanceStatus !== 'RUNNING') {
 					isResizing = true;
-					console.log('Still resizing = ', isResizing);
+					// console.log('Still resizing = ', isResizing);
 					vmOptimisticUI = 'vmOptimisticUI';
 				}
 				$newList.append(
@@ -76,7 +76,7 @@
 			dataType: 'json',
 			cache: false,
 			success: function(res) {
-				console.log('The response from the server is = ', res);
+				console.log('GET /admin/vms response from server is = ', res);
 				if ( res.hasOwnProperty('err') ) {
 				}
 				else if( res.hasOwnProperty('vms') ) {
@@ -152,13 +152,12 @@
 */
 	function readVMsCallback(err, isRsizing) {
 		if (!err) {
-			console.log("Monitor ==> isRsizing of readVMs", isRsizing);
 			if (isRsizing) {
-				console.log("Monitor ==> Call myself again");
+				console.log("monitorResizingOfVMs, currently instance group is resizing, refresh in 2 secs");
 				setTimeout(monitorResizingOfVMs, 2000);
 			}
 			else {
-				console.log("Monitor ==> Finished resizing, back off time is a bit longer");
+				console.log("monitorResizingOfVMs, currently instance group is not resizing, therefore make next refresh only in 10 secs");
 				setTimeout(monitorResizingOfVMs, 10000);
 			}
 		}
@@ -168,7 +167,6 @@
 	}
 
 	function monitorResizingOfVMs() {
-		console.log("Monitor ==> readVMs");
 		readVMs(readVMsCallback);
 	}
 

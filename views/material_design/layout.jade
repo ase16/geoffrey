@@ -19,8 +19,8 @@ html
 							a.mdl-navigation__link(href="/admin/main") Home
 							a.mdl-navigation__link(href="/admin/monitoring/geoffrey") Geoffrey
 							a.mdl-navigation__link(href="/admin/monitoring/carlton") Carlton
-							a.mdl-navigation__link(href="/admin/monitoring/will") Will
 							a.mdl-navigation__link(href="/admin/monitoring/jazz") Jazz
+							a.mdl-navigation__link(href="/admin/monitoring/will") Will
 							form#logout(method='post' action='/logout')
 								a.mdl-navigation__link(href='#', onclick='logout()') Logout (#{email})
 						else if user
@@ -39,8 +39,8 @@ html
 						a.mdl-navigation__link(href="/admin/main") Home
 						a.mdl-navigation__link(href="/admin/monitoring/geoffrey") Geoffrey
 						a.mdl-navigation__link(href="/admin/monitoring/carlton") Carlton
-						a.mdl-navigation__link(href="/admin/monitoring/will") Will
 						a.mdl-navigation__link(href="/admin/monitoring/jazz") Jazz
+						a.mdl-navigation__link(href="/admin/monitoring/will") Will
 						form#logout(method='post' action='/logout')
 							a.mdl-navigation__link(href='#', onclick='logout()') Logout (#{email})
 					else if user
@@ -54,14 +54,6 @@ html
 						a.mdl-navigation__link(href="/register") Create account
 			main.mdl-layout__content
 				block content
-			
-			footer.mdl-mini-footer
-				.mdl-mini-footer__left-section
-					.mdl-logo Geoffrey
-				.mdl-mini-footer__right-section
-					ul.mdl-mini-footer__link-list
-						li
-							span Advanced Software Engineering Project 2016
 
 		script.
 			var logout = function() {
