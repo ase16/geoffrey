@@ -11,6 +11,10 @@
   padding-right: 0;
 }
 
+.customContainer .mdl-grid .mdl-cell {
+	box-shadow: 0px 0px 10px #000;
+}
+
 .card-header {
 	position: relative;
 	margin:auto;
@@ -19,45 +23,47 @@
 	color: #00B7FF;
 }
 
+.mdl-card__title {
+	padding: 0px;
+	height: 200px;
+}
+
 .login-card > .mdl-card__title {
-	color: white;
-  height: 300px;
-  background: url('../images/login.jpg') center / cover;
+	background: url('../images/login.jpg') center / cover;
 }
 
 .fetcherlog > .mdl-card__title {
-	color: white;
-	height: 300px;
 	background: url('../images/fetcherlog.jpg') center / cover;
 }
 
 .vmmanagement > .mdl-card__title {
-	color: white;
-	height: 300px;
 	background: url('../images/vmmanagement.jpg') center / cover;
 }
 
 .viz > .mdl-card__title {
-	color: white;
-	height: 300px;
 	background: url('../images/viz.jpg') top / cover;
 }
 
 .termmanagement > .mdl-card__title {
-	height: 300px;
 	background: url('../images/termmanagement.jpeg') center / cover;
 }
 
 .adminmain > .mdl-card__title {
-	color: white;
-	height: 300px;
 	background: url('../images/adminmain.jpg') center / cover;
 }
 
 .companymain > .mdl-card__title {
-	color: white;
-	height: 300px;
 	background: url('../images/companymain.jpg') center / cover;
+}
+
+.mdl-card__title-text {
+	text-shadow: 0px 0px 5px #ffffff;
+	width: 100%;
+	display: block;
+	box-shadow: 0px 0px 10px #000;
+	color: #333;
+	padding: 10px 20px;
+	background-color: rgba(255,255,255,0.8);
 }
 
 .mdl-badge[data-badge]:after {
@@ -98,7 +104,7 @@
 #bss-wrapper .graph,
 #avg-wrapper .graph {
 	padding: 20px;
-	box-shadow: 0 0 3px #aaa;
+	box-shadow: 0 0 3px #000;
 	display: inline-block;
 	margin: 10px;
 }
@@ -222,7 +228,7 @@ span.displayVM, span.displayVMState {
 #status-wrapper {
 	color: black;
 	padding: 20px;
-	box-shadow: 0 0 3px #aaa;
+	box-shadow: 0 0 3px #000;
 	margin: 10px;
 }
 
