@@ -51,7 +51,8 @@ phil-nodes = us-central1-a
 ```
    **REALLY IMPORTANT: Choose real different regions, not just "europe-west1-d", "europe-west1-c", "europe-west1-b" etc. for the different components**
 4. **Instance template** > Choose the appropriate instance template for the current instance group you create.
-5. **Autoscaling** > Only *"geoffrey-nodes"* and *"carlton-nodes"* make use of google predefined auto-scalers. For both of them choose for *Autoscale based on* *"CPU usage"* and as Maximum number of instances choose 8
+5. **[IMPORTANT: Perform this substep afterwards, after you have done all the other steps]**
+**Autoscaling** > Only *"geoffrey-nodes"* and *"carlton-nodes"* make use of google predefined auto-scalers. For both of them choose for *Autoscale based on* *"CPU usage"* and as Maximum number of instances choose 8
 
 
 ### 3) Configure Load-Balancer for **geoffrey-nodes**
@@ -104,6 +105,7 @@ Navigate in the google cloud platform console to *Compute Engine* > *Metadata*. 
 **geoffrey-config-production**
 
 * For **proxy.carlton** makes sure you use the ip that was created for the **carlton-load-balancer**
+* In **admin-emails** add your email address with which you would like to register as an admin-user (emails that are not listed here, can only register as company-users)
 
 ```json
 {
